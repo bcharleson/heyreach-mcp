@@ -1,0 +1,37 @@
+{
+  "mcpServers": {
+    "heyreach": {
+      "command": "npx",
+      "args": [
+        "heyreach-mcp-server@1.0.3",
+        "--api-key=QGUYbd7rkBqswN0otgk8KvzCVRZ+h7Tiz0onFETzF6M="
+      ]
+    }
+  }
+}
+
+// Alternative configuration if installed globally:
+// {
+//   "mcpServers": {
+//     "heyreach": {
+//       "command": "heyreach-mcp-server",
+//       "args": [
+//         "--api-key=YOUR_HEYREACH_API_KEY_HERE"
+//       ]
+//     }
+//   }
+// }
+
+// Configuration with custom base URL:
+// {
+//   "mcpServers": {
+//     "heyreach": {
+//       "command": "npx",
+//       "args": [
+//         "heyreach-mcp-server",
+//         "--api-key=YOUR_HEYREACH_API_KEY_HERE",
+//         "--base-url=https://api.heyreach.io/api/public"
+//       ]
+//     }
+//   }
+// }
