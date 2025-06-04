@@ -1,6 +1,6 @@
 {
   "name": "heyreach-mcp-server",
-  "version": "1.0.3",
+  "version": "1.1.0",
   "description": "Model Context Protocol server for HeyReach API integration",
   "type": "module",
   "main": "dist/index.js",
