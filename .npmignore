@@ -1,0 +1,36 @@
+# Source files (only include dist)
+src/
+tsconfig.json
+
+# Test files
+test-*.js
+package/
+
+# Development files
+*.log
+.DS_Store
+.env
+.env.local
+
+# IDE files
+.vscode/
+.idea/
+
+# Git files
+.git/
+.gitignore
+
+# Node modules
+node_modules/
+
+# Build artifacts (keep dist)
+# dist/ - we want to include this
+
+# Documentation (keep main docs)
+# README.md - keep
+# LICENSE - keep
+# CHANGELOG.md - keep
+
+# Config files for development
+claude-config-real.json
+debug-api.js
