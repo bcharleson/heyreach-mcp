@@ -1,6 +1,6 @@
 {
   "name": "heyreach-mcp-server",
-  "version": "1.1.7",
+  "version": "1.1.8",
   "description": "Production-ready Model Context Protocol server for HeyReach LinkedIn automation with comprehensive validation",
   "type": "module",
   "main": "dist/index.js",

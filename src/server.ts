@@ -18,7 +18,12 @@ export class HeyReachMcpServer {
   constructor(config: HeyReachConfig) {
     this.server = new McpServer({
       name: 'heyreach-mcp-server',
-      version: '1.1.7', // CRITICAL BUG FIX: Fixed keyValidator._parse error in Zod schemas
+      version: '1.1.8', // Enhanced with MCP best practices and documentation
+    }, {
+      capabilities: {
+        tools: {}
+        // TODO: Add logging capability when MCP SDK supports it properly
+      }
     });
 
     this.heyReachClient = new HeyReachClient(config);
@@ -32,6 +37,8 @@ export class HeyReachMcpServer {
     this.setupAnalyticsTools();
     this.setupListTools();
   }
+
+
 
   private setupCoreTools() {
     // API Key validation - TESTED AND WORKING ✅
