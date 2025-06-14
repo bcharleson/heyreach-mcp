@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "heyreach": {
+      "command": "npx",
+      "args": [
+        "heyreach-mcp-server",
+        "--api-key=QGUYbd7rkBqswN0otgk8KvzCVRZ+h7Tiz0onFETzF6M="
+      ]
+    }
+  }
+}
+
+// Note: Bearer token is automatically added by the server
+// No need to include "Bearer " prefix in your API key
