@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "heyreach": {
+      "command": "node",
+      "args": [
+        "/Users/brandoncharleson/Documents/DeveloperProjects/HeyReach MCP/dist/index.js",
+        "--api-key=QGUYbd7rkBqswN0otgk8KvzCVRZ+h7Tiz0onFETzF6M="
+      ]
+    }
+  }
+}

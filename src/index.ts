@@ -21,9 +21,9 @@ function parseArguments(): { apiKey: string; baseUrl?: string } {
       baseUrl = args[i + 1];
       i++; // Skip next argument as it's the value
     } else if (arg.startsWith('--api-key=')) {
-      apiKey = arg.split('=')[1];
+      apiKey = arg.substring('--api-key='.length);
     } else if (arg.startsWith('--base-url=')) {
-      baseUrl = arg.split('=')[1];
+      baseUrl = arg.substring('--base-url='.length);
     }
   }
 

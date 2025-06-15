@@ -122,6 +122,54 @@ export interface MyNetworkProfile {
   emailAddress: string;
 }
 
+export interface LinkedInAccount {
+  id: number;
+  email: string;
+  firstName: string;
+  lastName: string;
+  fullName: string;
+  profileUrl: string;
+  imageUrl?: string;
+  warmupStatus: 'ACTIVE' | 'PAUSED' | 'WARMING_UP' | 'INACTIVE';
+  dailyLimit: number;
+  isActive: boolean;
+  connectionCount?: number;
+  lastActivity?: string;
+}
+
+export interface CampaignSequenceStep {
+  type: 'CONNECTION_REQUEST' | 'MESSAGE' | 'INMAIL' | 'VIEW_PROFILE';
+  delay: number; // days to wait
+  message?: string; // supports {{variables}}
+  noteText?: string; // for connection requests
+}
+
+export interface CampaignSequence {
+  steps: CampaignSequenceStep[];
+}
+
+export interface CampaignSettings {
+  stopOnReply?: boolean;
+  stopOnAutoReply?: boolean;
+  excludeInOtherCampaigns?: boolean;
+  excludeHasOtherAccConversations?: boolean;
+}
+
+export interface CampaignAnalytics {
+  campaignId: number;
+  campaignName: string;
+  totalLeads: number;
+  profileViews: number;
+  connectionsSent: number;
+  connectionsAccepted: number;
+  messagesSent: number;
+  messagesReplied: number;
+  connectionAcceptanceRate: number;
+  messageReplyRate: number;
+  startDate: string;
+  endDate: string;
+}
+
 export interface ApiResponse<T = any> {
   success: boolean;
   data?: T;

@@ -18,7 +18,12 @@ export class HeyReachMcpServer {
   constructor(config: HeyReachConfig) {
     this.server = new McpServer({
       name: 'heyreach-mcp-server',
-      version: '1.1.7', // CRITICAL BUG FIX: Fixed keyValidator._parse error in Zod schemas
+      version: '1.2.0', // Production v1 with critical endpoints and bulletproof tooling
+    }, {
+      capabilities: {
+        tools: {}
+        // TODO: Add logging capability when MCP SDK supports it properly
+      }
     });
 
     this.heyReachClient = new HeyReachClient(config);
@@ -28,10 +33,13 @@ export class HeyReachMcpServer {
   private setupTools() {
     // Only setup working tools - based on API validation results
     this.setupCoreTools();
+    this.setupCriticalTools(); // NEW: LinkedIn accounts, campaign creation, etc.
     this.setupConversationTools();
     this.setupAnalyticsTools();
     this.setupListTools();
   }
+
+
 
   private setupCoreTools() {
     // API Key validation - TESTED AND WORKING ✅
@@ -170,6 +178,147 @@ export class HeyReachMcpServer {
     );
   }
 
+  private setupCriticalTools() {
+    // Get LinkedIn accounts - CRITICAL FOR CAMPAIGN CREATION ✅
+    this.server.tool(
+      'get-linkedin-accounts',
+      {
+        offset: z.number().optional().default(0).describe('Number of records to skip (for pagination)'),
+        limit: z.number().optional().default(50).describe('Maximum number of LinkedIn accounts to return (1-100)')
+      },
+      async ({ offset, limit }) => {
+        try {
+          validateParameterTypes({ offset, limit }, { offset: 'number', limit: 'number' }, 'get-linkedin-accounts');
+
+          const result = await this.heyReachClient.getLinkedInAccounts(offset, limit);
+          return createSuccessResponse(
+            {
+              accounts: result.data,
+              pagination: result.pagination,
+              total: result.pagination?.total || 0
+            },
+            `Retrieved ${result.data?.length || 0} LinkedIn accounts`
+          );
+        } catch (error) {
+          return createErrorResponse(error instanceof Error ? error.message : 'Unknown error');
+        }
+      }
+    );
+
+    // Create campaign - CRITICAL FOR AUTOMATION ✅
+    this.server.tool(
+      'create-campaign',
+      {
+        name: z.string().describe('Name for the new campaign'),
+        listId: z.number().describe('**PREREQUISITE**: Use create-empty-list to create a list first. The ID of the lead list to use for this campaign'),
+        linkedInAccountIds: z.array(z.number()).describe('**PREREQUISITE**: Use get-linkedin-accounts to get valid account IDs. Array of LinkedIn account IDs to assign to this campaign'),
+        sequence: z.object({
+          steps: z.array(z.object({
+            type: z.enum(['CONNECTION_REQUEST', 'MESSAGE', 'INMAIL', 'VIEW_PROFILE']).describe('Type of action to perform'),
+            delay: z.number().describe('Number of days to wait before this step'),
+            message: z.string().optional().describe('Message content (supports {{firstName}}, {{lastName}}, {{companyName}} variables)'),
+            noteText: z.string().optional().describe('Note text for connection requests')
+          }))
+        }).describe('Campaign sequence with steps to execute'),
+        settings: z.object({
+          stopOnReply: z.boolean().optional().default(true).describe('Stop campaign when lead replies'),
+          stopOnAutoReply: z.boolean().optional().default(true).describe('Stop campaign on auto-reply detection'),
+          excludeInOtherCampaigns: z.boolean().optional().default(false).describe('Exclude leads already in other campaigns'),
+          excludeHasOtherAccConversations: z.boolean().optional().default(false).describe('Exclude leads with existing conversations')
+        }).optional().describe('Campaign settings and exclusion rules')
+      },
+      async ({ name, listId, linkedInAccountIds, sequence, settings }) => {
+        try {
+          validateRequiredParams({ name, listId, linkedInAccountIds, sequence }, ['name', 'listId', 'linkedInAccountIds', 'sequence'], 'create-campaign');
+          validateParameterTypes({ listId }, { listId: 'number' }, 'create-campaign');
+
+          if (!Array.isArray(linkedInAccountIds) || linkedInAccountIds.length === 0) {
+            throw new Error('linkedInAccountIds must be a non-empty array. Use get-linkedin-accounts to get valid account IDs.');
+          }
+
+          if (!sequence.steps || !Array.isArray(sequence.steps) || sequence.steps.length === 0) {
+            throw new Error('sequence.steps must be a non-empty array of campaign steps');
+          }
+
+          const result = await this.heyReachClient.createCampaign(name, listId, linkedInAccountIds, sequence, settings);
+          return createSuccessResponse(
+            result.data,
+            `Campaign "${name}" created successfully with ${sequence.steps.length} steps`
+          );
+        } catch (error) {
+          return createErrorResponse(error instanceof Error ? error.message : 'Unknown error');
+        }
+      }
+    );
+
+    // Pause campaign - SEPARATE FROM TOGGLE ✅
+    this.server.tool(
+      'pause-campaign',
+      {
+        campaignId: z.number().describe('**PREREQUISITE**: Use get-all-campaigns or get-active-campaigns to get valid campaign IDs. The ID of the campaign to pause')
+      },
+      async ({ campaignId }) => {
+        try {
+          validateRequiredParams({ campaignId }, ['campaignId'], 'pause-campaign');
+          validateParameterTypes({ campaignId }, { campaignId: 'number' }, 'pause-campaign');
+
+          const result = await this.heyReachClient.pauseCampaign(campaignId);
+          return createSuccessResponse(
+            result.data,
+            'Campaign paused successfully'
+          );
+        } catch (error) {
+          return createErrorResponse(error instanceof Error ? error.message : 'Unknown error');
+        }
+      }
+    );
+
+    // Resume campaign - SEPARATE FROM TOGGLE ✅
+    this.server.tool(
+      'resume-campaign',
+      {
+        campaignId: z.number().describe('**PREREQUISITE**: Use get-all-campaigns to get valid campaign IDs. The ID of the campaign to resume')
+      },
+      async ({ campaignId }) => {
+        try {
+          validateRequiredParams({ campaignId }, ['campaignId'], 'resume-campaign');
+          validateParameterTypes({ campaignId }, { campaignId: 'number' }, 'resume-campaign');
+
+          const result = await this.heyReachClient.resumeCampaign(campaignId);
+          return createSuccessResponse(
+            result.data,
+            'Campaign resumed successfully'
+          );
+        } catch (error) {
+          return createErrorResponse(error instanceof Error ? error.message : 'Unknown error');
+        }
+      }
+    );
+
+    // Remove lead from campaign - NEW FUNCTIONALITY ✅
+    this.server.tool(
+      'remove-lead-from-campaign',
+      {
+        campaignId: z.number().describe('**PREREQUISITE**: Use get-all-campaigns to get valid campaign IDs. The ID of the campaign to remove lead from'),
+        leadId: z.string().describe('The LinkedIn ID or profile URL of the lead to remove')
+      },
+      async ({ campaignId, leadId }) => {
+        try {
+          validateRequiredParams({ campaignId, leadId }, ['campaignId', 'leadId'], 'remove-lead-from-campaign');
+          validateParameterTypes({ campaignId }, { campaignId: 'number' }, 'remove-lead-from-campaign');
+
+          const result = await this.heyReachClient.removeLeadFromCampaign(campaignId, leadId);
+          return createSuccessResponse(
+            result.data,
+            'Lead removed from campaign successfully'
+          );
+        } catch (error) {
+          return createErrorResponse(error instanceof Error ? error.message : 'Unknown error');
+        }
+      }
+    );
+  }
+
   private setupConversationTools() {
     // Get conversations - NEW WORKING ENDPOINT ✅
     this.server.tool(
@@ -250,6 +399,30 @@ export class HeyReachMcpServer {
           return createSuccessResponse(
             result.data,
             'Overall statistics retrieved successfully'
+          );
+        } catch (error) {
+          return createErrorResponse(error instanceof Error ? error.message : 'Unknown error');
+        }
+      }
+    );
+
+    // Get campaign analytics - DETAILED PERFORMANCE METRICS ✅
+    this.server.tool(
+      'get-campaign-analytics',
+      {
+        campaignId: z.number().describe('**PREREQUISITE**: Use get-all-campaigns to get valid campaign IDs. The ID of the campaign to get analytics for'),
+        startDate: z.string().optional().describe('Start date in ISO format (e.g., "2024-01-01T00:00:00.000Z")'),
+        endDate: z.string().optional().describe('End date in ISO format (e.g., "2024-12-31T23:59:59.999Z")')
+      },
+      async ({ campaignId, startDate, endDate }) => {
+        try {
+          validateRequiredParams({ campaignId }, ['campaignId'], 'get-campaign-analytics');
+          validateParameterTypes({ campaignId }, { campaignId: 'number' }, 'get-campaign-analytics');
+
+          const result = await this.heyReachClient.getCampaignAnalytics(campaignId, startDate, endDate);
+          return createSuccessResponse(
+            result.data,
+            'Campaign analytics retrieved successfully'
           );
         } catch (error) {
           return createErrorResponse(error instanceof Error ? error.message : 'Unknown error');
