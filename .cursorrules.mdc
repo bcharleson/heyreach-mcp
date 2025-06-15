@@ -1,0 +1,252 @@
+# HeyReach MCP Server Development Standards
+
+## Overview
+This document establishes development standards and best practices for the HeyReach Model Context Protocol (MCP) server, ensuring >75% success rate and production-ready quality.
+
+## Core Development Principles
+
+### 1. API-First Development
+- **Test API endpoints directly** before implementing MCP tools
+- **Validate authentication** with raw HTTP calls first
+- **Document working endpoints** in API_ENDPOINT_STATUS.md
+- **Remove broken tools** rather than shipping unreliable functionality
+
+### 2. Systematic Error Handling
+- **Categorize errors** by HTTP status codes (401, 400, 404, 500+)
+- **Provide actionable guidance** in error messages
+- **Use consistent error response format** across all tools
+- **Test error scenarios** as thoroughly as success cases
+
+### 3. Incremental Tool Building
+- **Start with core functionality** (authentication, basic operations)
+- **Add tools incrementally** after validating dependencies
+- **Maintain >75% success rate** before adding new features
+- **Test each tool independently** and in combination
+
+## MCP Server Architecture Standards
+
+### Server Structure
+```typescript
+export class HeyReachMcpServer {
+  private server: McpServer;
+  private heyReachClient: HeyReachClient;
+  
+  constructor(config: HeyReachConfig) {
+    this.server = new McpServer({
+      name: 'heyreach-mcp-server',
+      version: '1.1.8'
+    }, {
+      capabilities: { tools: {} }
+    });
+    
+    this.heyReachClient = new HeyReachClient(config);
+    this.setupTools();
+  }
+}
+```
+
+### Tool Implementation Pattern
+```typescript
+this.server.tool(
+  'tool-name',
+  {
+    param: z.string().describe('Clear parameter description')
+  },
+  async ({ param }) => {
+    try {
+      // 1. Validate parameters
+      validateRequiredParams({ param }, ['param'], 'tool-name');
+      
+      // 2. Call API client
+      const result = await this.heyReachClient.methodName(param);
+      
+      // 3. Return success response
+      return createSuccessResponse(result.data, 'Success message');
+    } catch (error) {
+      // 4. Handle errors consistently
+      return createErrorResponse(error instanceof Error ? error.message : 'Unknown error');
+    }
+  }
+);
+```
+
+## Authentication Standards
+
+### HeyReach API Authentication
+- **Use X-API-KEY header** (not Authorization Bearer)
+- **Base URL**: `https://api.heyreach.io/api/public`
+- **Timeout**: 30 seconds minimum for API responses
+- **Handle empty responses** (HeyReach returns content-length: 0 for auth)
+
+### API Client Configuration
+```typescript
+this.client = axios.create({
+  baseURL: config.baseUrl || 'https://api.heyreach.io/api/public',
+  headers: {
+    'X-API-KEY': this.apiKey,
+    'Content-Type': 'application/json',
+    'Accept': 'application/json',
+  },
+  timeout: 30000,
+});
+```
+
+## Error Handling Standards
+
+### MCP Error Codes
+- **-32602**: Invalid params (validation errors)
+- **-32603**: Internal error (server errors)
+- **-32601**: Method not found
+- **-32600**: Invalid request
+
+### Error Response Pattern
+```typescript
+// Use consistent error response format
+return createErrorResponse(error instanceof Error ? error.message : 'Unknown error');
+
+// For validation errors, include helpful guidance
+throw new McpError(
+  ErrorCode.InvalidParams,
+  `${toolName}: Parameter '${param}' is required. Use get-campaigns to get valid IDs.`
+);
+```
+
+### API Error Categorization
+```typescript
+// Categorize HeyReach API errors properly
+if (status === 401 || status === 403) {
+  throw new McpError(ErrorCode.InvalidParams, 'Invalid API key');
+}
+if (status === 404) {
+  throw new McpError(ErrorCode.InvalidParams, 'Resource not found');
+}
+if (message.includes('timeout')) {
+  throw new McpError(ErrorCode.InternalError, 'Network timeout - retry in a few moments');
+}
+```
+
+## Testing Standards
+
+### Testing Hierarchy
+1. **Direct API calls** (axios/curl) - Must pass first
+2. **API client methods** - Test HeyReachClient directly
+3. **MCP tool execution** - Test through MCP protocol
+4. **End-to-end integration** - Test with Claude/Cursor
+
+### Success Rate Requirements
+- **>75% success rate** required for production deployment
+- **100% authentication success** required for core functionality
+- **Comprehensive error handling** for all failure scenarios
+- **Real API testing** with valid credentials
+
+### Test File Naming
+- `test-api-*.js` - Direct API endpoint tests
+- `test-client-*.js` - HeyReachClient method tests  
+- `test-mcp-*.js` - MCP server protocol tests
+- `test-integration-*.js` - End-to-end integration tests
+
+## Development Workflow
+
+### 1. Pre-Development
+- [ ] Validate API endpoints with direct HTTP calls
+- [ ] Document working endpoints and parameters
+- [ ] Test authentication thoroughly
+- [ ] Plan tool dependencies and prerequisites
+
+### 2. Implementation
+- [ ] Implement API client methods first
+- [ ] Add comprehensive error handling
+- [ ] Create MCP tool wrappers
+- [ ] Test each tool independently
+
+### 3. Quality Assurance
+- [ ] Achieve >75% tool success rate
+- [ ] Test error scenarios and edge cases
+- [ ] Validate with real API credentials
+- [ ] Document tool usage and examples
+
+### 4. Deployment
+- [ ] Update version number
+- [ ] Build and test compiled output
+- [ ] Publish to npm registry
+- [ ] Update client configurations
+
+## Version Control Standards
+
+### Commit Message Format
+```
+type(scope): description
+
+feat(auth): add API key validation tool
+fix(campaigns): handle empty campaign lists
+docs(readme): update installation instructions
+test(api): add comprehensive endpoint validation
+```
+
+### Branch Strategy
+- **main**: Production-ready code only
+- **feature/***: New tool development
+- **fix/***: Bug fixes and improvements
+- **test/***: Testing and validation improvements
+
+## Documentation Requirements
+
+### Required Documentation Files
+- **README.md**: Installation, configuration, usage examples
+- **CHANGELOG.md**: Version history and breaking changes
+- **API_ENDPOINT_STATUS.md**: Current API endpoint validation status
+- **.cursorrules.mdc**: Development standards (this file)
+
+### Tool Documentation Format
+```markdown
+#### tool-name
+Description of what the tool does and when to use it.
+
+**Parameters**:
+- `param1` (required): Description and example
+- `param2` (optional): Description and default value
+
+**Example Response**:
+```json
+{
+  "success": true,
+  "data": { ... }
+}
+```
+
+**Prerequisites**: List any required setup or dependencies
+```
+
+## Production Readiness Checklist
+
+### Before Release
+- [ ] All core tools have >75% success rate
+- [ ] Authentication works reliably
+- [ ] Error messages are actionable and helpful
+- [ ] Documentation is complete and accurate
+- [ ] Version number is updated
+- [ ] Tests pass with real API credentials
+
+### Client Integration
+- [ ] Claude Desktop configuration tested
+- [ ] Cursor IDE integration verified
+- [ ] Windsurf compatibility confirmed
+- [ ] Error handling works in all clients
+
+## Maintenance Standards
+
+### Regular Tasks
+- **Weekly**: Test core functionality with real API
+- **Monthly**: Update dependencies and security patches
+- **Per Release**: Validate all tools and update documentation
+- **As Needed**: Monitor API changes and update endpoints
+
+### Performance Monitoring
+- Track tool success rates in production
+- Monitor API response times and timeouts
+- Log and analyze common error patterns
+- Maintain compatibility with MCP client updates
+
+---
+
+*This document should be updated whenever development practices change or new standards are established.*

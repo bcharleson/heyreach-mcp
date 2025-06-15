@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "heyreach": {
+      "command": "npx",
+      "args": [
+        "heyreach-mcp-server@1.1.8",
+        "--api-key=QGUYbd7rkBqswN0otgk8KvzCVRZ+h7Tiz0onFETzF6M="
+      ]
+    }
+  }
+}

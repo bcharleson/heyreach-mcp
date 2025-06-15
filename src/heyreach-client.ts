@@ -8,7 +8,11 @@ import {
   Conversation,
   OverallStats,
   LeadList,
-  MyNetworkProfile
+  MyNetworkProfile,
+  LinkedInAccount,
+  CampaignSequence,
+  CampaignSettings,
+  CampaignAnalytics
 } from './types.js';
 import { handleHeyReachError } from './error-handler.js';
 
@@ -312,6 +316,142 @@ export class HeyReachClient {
       };
     } catch (error) {
       handleHeyReachError(error, 'add-leads-to-campaign');
+      throw error; // This will never execute but satisfies TypeScript
+    }
+  }
+
+  /**
+   * Get LinkedIn accounts - CRITICAL NEW ENDPOINT ✅
+   */
+  async getLinkedInAccounts(offset: number = 0, limit: number = 50): Promise<PaginatedResponse<LinkedInAccount>> {
+    try {
+      const response = await this.client.post('/linkedinaccount/GetAll', {
+        offset,
+        limit
+      });
+      return {
+        success: true,
+        data: response.data?.items || [],
+        pagination: {
+          page: Math.floor(offset / limit) + 1,
+          limit,
+          total: response.data?.totalCount || 0,
+          hasMore: (offset + limit) < (response.data?.totalCount || 0)
+        },
+        message: 'LinkedIn accounts retrieved successfully'
+      };
+    } catch (error) {
+      handleHeyReachError(error, 'get-linkedin-accounts');
+      throw error; // This will never execute but satisfies TypeScript
+    }
+  }
+
+  /**
+   * Create campaign - CRITICAL NEW ENDPOINT ✅
+   */
+  async createCampaign(
+    name: string,
+    listId: number,
+    linkedInAccountIds: number[],
+    sequence: CampaignSequence,
+    settings?: CampaignSettings
+  ): Promise<ApiResponse<Campaign>> {
+    try {
+      const response = await this.client.post('/campaign/CreateV2', {
+        name,
+        listId,
+        linkedInAccountIds,
+        sequence,
+        settings: {
+          stopOnReply: settings?.stopOnReply ?? true,
+          stopOnAutoReply: settings?.stopOnAutoReply ?? true,
+          excludeInOtherCampaigns: settings?.excludeInOtherCampaigns ?? false,
+          excludeHasOtherAccConversations: settings?.excludeHasOtherAccConversations ?? false
+        }
+      });
+      return {
+        success: true,
+        data: response.data,
+        message: `Campaign "${name}" created successfully`
+      };
+    } catch (error) {
+      handleHeyReachError(error, 'create-campaign');
+      throw error; // This will never execute but satisfies TypeScript
+    }
+  }
+
+  /**
+   * Pause campaign - SEPARATE ENDPOINT ✅
+   */
+  async pauseCampaign(campaignId: number): Promise<ApiResponse<Campaign>> {
+    try {
+      const response = await this.client.post(`/campaign/Pause?campaignId=${campaignId}`);
+      return {
+        success: true,
+        data: response.data,
+        message: 'Campaign paused successfully'
+      };
+    } catch (error) {
+      handleHeyReachError(error, 'pause-campaign');
+      throw error; // This will never execute but satisfies TypeScript
+    }
+  }
+
+  /**
+   * Resume campaign - SEPARATE ENDPOINT ✅
+   */
+  async resumeCampaign(campaignId: number): Promise<ApiResponse<Campaign>> {
+    try {
+      const response = await this.client.post(`/campaign/Resume?campaignId=${campaignId}`);
+      return {
+        success: true,
+        data: response.data,
+        message: 'Campaign resumed successfully'
+      };
+    } catch (error) {
+      handleHeyReachError(error, 'resume-campaign');
+      throw error; // This will never execute but satisfies TypeScript
+    }
+  }
+
+  /**
+   * Remove lead from campaign - NEW ENDPOINT ✅
+   */
+  async removeLeadFromCampaign(campaignId: number, leadId: string): Promise<ApiResponse<{ removed: boolean }>> {
+    try {
+      const response = await this.client.delete(`/campaign/${campaignId}/leads/${leadId}`);
+      return {
+        success: true,
+        data: { removed: true },
+        message: 'Lead removed from campaign successfully'
+      };
+    } catch (error) {
+      handleHeyReachError(error, 'remove-lead-from-campaign');
+      throw error; // This will never execute but satisfies TypeScript
+    }
+  }
+
+  /**
+   * Get campaign analytics - NEW ENDPOINT ✅
+   */
+  async getCampaignAnalytics(
+    campaignId: number,
+    startDate?: string,
+    endDate?: string
+  ): Promise<ApiResponse<CampaignAnalytics>> {
+    try {
+      const response = await this.client.post('/campaign/GetAnalytics', {
+        campaignId,
+        startDate: startDate || "2024-01-01T00:00:00.000Z",
+        endDate: endDate || new Date().toISOString()
+      });
+      return {
+        success: true,
+        data: response.data,
+        message: 'Campaign analytics retrieved successfully'
+      };
+    } catch (error) {
+      handleHeyReachError(error, 'get-campaign-analytics');
       throw error; // This will never execute but satisfies TypeScript
     }
   }
