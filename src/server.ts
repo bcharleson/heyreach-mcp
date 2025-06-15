@@ -18,7 +18,7 @@ export class HeyReachMcpServer {
   constructor(config: HeyReachConfig) {
     this.server = new McpServer({
       name: 'heyreach-mcp-server',
-      version: '1.2.1', // Enhanced with n8n Agent compatibility and comprehensive documentation
+      version: '1.2.2', // FIXED: n8n Agent tool execution with enhanced descriptions for AI agent tool selection
     }, {
       capabilities: {
         tools: {}
@@ -45,7 +45,7 @@ export class HeyReachMcpServer {
     // API Key validation - TESTED AND WORKING ✅
     this.server.tool(
       'check-api-key',
-      {},
+      'Verify that your HeyReach API key is valid and working. This tool requires NO parameters - simply call it to validate your API authentication. Use this as a first step to ensure your HeyReach integration is properly configured before using other tools.',
       async () => {
         try {
           const result = await this.heyReachClient.checkApiKey();
@@ -62,6 +62,7 @@ export class HeyReachMcpServer {
     // Get all campaigns - TESTED AND WORKING ✅
     this.server.tool(
       'get-all-campaigns',
+      'Retrieve all campaigns from your HeyReach account with pagination support. This tool accepts optional parameters for pagination control.',
       {
         offset: z.number().optional().default(0).describe('Number of records to skip (for pagination)'),
         limit: z.number().optional().default(50).describe('Maximum number of campaigns to return (1-100)')
