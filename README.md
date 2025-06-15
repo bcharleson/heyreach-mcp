@@ -84,7 +84,7 @@ Add the following to your Claude Desktop configuration file:
     "heyreach": {
       "command": "npx",
       "args": [
-        "heyreach-mcp-server",
+        "heyreach-mcp-server@1.2.0",
         "--api-key=YOUR_HEYREACH_API_KEY"
       ]
     }
@@ -92,15 +92,38 @@ Add the following to your Claude Desktop configuration file:
 }
 ```
 
-### Other MCP Clients
+### n8n Agent (Workflow Automation)
 
-For other MCP-compatible clients (Cursor, Windsurf, ChatGPT, n8n Agent, etc.), use the following configuration:
+**✅ CONFIRMED COMPATIBLE** - All 18 tools working with n8n community MCP node
+
+1. Install the community MCP node in n8n: `n8n-nodes-mcp`
+2. Create **MCP Client (STDIO)** credentials in n8n:
 
 ```json
 {
   "command": "npx",
   "args": [
-    "heyreach-mcp-server",
+    "heyreach-mcp-server@1.2.0",
+    "--api-key=YOUR_HEYREACH_API_KEY"
+  ],
+  "transport": "stdio"
+}
+```
+
+3. Add **MCP Client** node to your workflows and select HeyReach credentials
+4. Choose from 18 available tools for LinkedIn automation workflows
+
+**📋 See [N8N_AGENT_SETUP.md](N8N_AGENT_SETUP.md) for complete workflow examples**
+
+### Other MCP Clients
+
+For other MCP-compatible clients (Cursor, Windsurf, ChatGPT, etc.), use the following configuration:
+
+```json
+{
+  "command": "npx",
+  "args": [
+    "heyreach-mcp-server@1.2.0",
     "--api-key=YOUR_HEYREACH_API_KEY"
   ],
   "transport": "stdio"
