@@ -18,7 +18,7 @@ export class HeyReachMcpServer {
   constructor(config: HeyReachConfig) {
     this.server = new McpServer({
       name: 'heyreach-mcp-server',
-      version: '1.2.0', // Production v1 with critical endpoints and bulletproof tooling
+      version: '1.2.1', // Enhanced with n8n Agent compatibility and comprehensive documentation
     }, {
       capabilities: {
         tools: {}

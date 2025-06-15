@@ -3,7 +3,7 @@
     "heyreach": {
       "command": "npx",
       "args": [
-        "heyreach-mcp-server@1.2.0",
+        "heyreach-mcp-server@1.2.1",
         "--api-key=QGUYbd7rkBqswN0otgk8KvzCVRZ+h7Tiz0onFETzF6M="
       ]
     }
