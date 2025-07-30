@@ -80,11 +80,20 @@ heyreach-mcp-server --http --port=3001
 # Health Check
 curl https://your-domain.com/health
 
-# MCP Endpoint
+# MCP Endpoint with URL path authentication
 POST https://your-domain.com/mcp/{API_KEY}
 Headers:
   Content-Type: application/json
   Accept: application/json, text/event-stream
+
+# MCP Endpoint with header authentication (NEW!)
+POST https://your-domain.com/mcp
+Headers:
+  Content-Type: application/json
+  Accept: application/json, text/event-stream
+  X-API-Key: YOUR_API_KEY
+  # OR
+  Authorization: Bearer YOUR_API_KEY
 ```
 
 ### ☁️ Cloud Deployment
@@ -226,6 +235,30 @@ Add the following to your Claude Desktop configuration file:
   }
 }
 ```
+
+#### Option 3: MCP Client with Header Authentication (EASIEST!)
+**🆕 NEW IN v2.0.2** - Recommended for n8n users
+
+1. Deploy HeyReach MCP Server to cloud (Vercel, Railway, etc.)
+2. Create **MCP Client (HTTP)** credentials in n8n:
+
+**MCP Client Configuration:**
+- **Endpoint**: `https://your-deployment.vercel.app/mcp`
+- **Server Transport**: `HTTP Streamable`
+- **Authentication**: `Header Auth`
+- **Credential**: Create a new credential with:
+  - **Name**: `HeyReach MCP`
+  - **X-API-Key**: `YOUR_HEYREACH_API_KEY`
+
+**Example n8n MCP Client Setup:**
+```
+Endpoint: https://heyreach-mcp-production.up.railway.app/mcp
+Server Transport: HTTP Streamable
+Authentication: Header Auth
+Credential: HeyReach MCP (X-API-Key: YOUR_API_KEY)
+```
+
+This method is much easier than URL path authentication and more secure!
 
 **📋 See [N8N_AGENT_SETUP.md](N8N_AGENT_SETUP.md) for complete workflow examples**
 

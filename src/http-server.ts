@@ -24,6 +24,29 @@ interface SessionTransport {
 const transports: { [sessionId: string]: SessionTransport } = {};
 
 /**
+ * Extract API key from URL path or headers
+ */
+function extractApiKey(req: Request): string | null {
+  // First try to get API key from URL path (existing method)
+  const pathApiKey = extractApiKeyFromPath(req.path);
+  if (pathApiKey) {
+    return pathApiKey;
+  }
+
+  // Then try to get API key from headers
+  const headerApiKey = req.headers['x-api-key'] || req.headers['authorization'];
+  if (headerApiKey) {
+    // Handle Authorization header with Bearer prefix
+    if (typeof headerApiKey === 'string' && headerApiKey.startsWith('Bearer ')) {
+      return headerApiKey.substring(7);
+    }
+    return headerApiKey as string;
+  }
+
+  return null;
+}
+
+/**
  * Extract API key from URL path
  */
 function extractApiKeyFromPath(path: string): string | null {
@@ -41,7 +64,7 @@ function createApp(): express.Application {
   app.use(cors({
     origin: '*', // Configure appropriately for production
     exposedHeaders: ['Mcp-Session-Id'],
-    allowedHeaders: ['Content-Type', 'mcp-session-id'],
+    allowedHeaders: ['Content-Type', 'mcp-session-id', 'x-api-key', 'authorization'],
   }));
   
   app.use(express.json());
@@ -67,13 +90,13 @@ function createHeyReachServer(apiKey: string, baseUrl?: string): HeyReachMcpServ
 async function handleMcpRequest(req: Request, res: Response) {
   try {
     // Extract API key from URL path
-    const apiKey = extractApiKeyFromPath(req.path);
+    const apiKey = extractApiKey(req);
     if (!apiKey) {
       res.status(400).json({
         jsonrpc: '2.0',
         error: {
           code: -32000,
-          message: 'Bad Request: API key required in URL path (/mcp/{API_KEY})',
+          message: 'Bad Request: API key required in URL path (/mcp/{API_KEY}) or header (X-API-Key or Authorization)',
         },
         id: null,
       });
@@ -173,13 +196,17 @@ export async function startHttpServer(port: number = 3000): Promise<void> {
   const app = createApp();
 
   // Handle POST requests for client-to-server communication
-  app.post('/mcp/:apiKey', handleMcpRequest);
+  // Support both URL path authentication (/mcp/{API_KEY}) and header authentication (/mcp)
+  app.post('/mcp/:apiKey?', handleMcpRequest);
+  app.post('/mcp', handleMcpRequest);
 
   // Handle GET requests for server-to-client notifications via SSE
-  app.get('/mcp/:apiKey', handleSessionRequest);
+  app.get('/mcp/:apiKey?', handleSessionRequest);
+  app.get('/mcp', handleSessionRequest);
 
   // Handle DELETE requests for session termination
-  app.delete('/mcp/:apiKey', handleSessionRequest);
+  app.delete('/mcp/:apiKey?', handleSessionRequest);
+  app.delete('/mcp', handleSessionRequest);
 
   // Health check endpoint
   app.get('/health', (req, res) => {
@@ -197,9 +224,14 @@ export async function startHttpServer(port: number = 3000): Promise<void> {
       version: '2.0.2',
       description: 'HTTP Streaming MCP Server for HeyReach LinkedIn automation',
       usage: {
-        endpoint: '/mcp/{API_KEY}',
+        endpoint: '/mcp/{API_KEY} or /mcp with header authentication',
         methods: ['POST', 'GET', 'DELETE'],
-        example: '/mcp/QGUYbd7r...'
+        authentication: [
+          'URL path: /mcp/{API_KEY}',
+          'Header: X-API-Key: {API_KEY}',
+          'Header: Authorization: Bearer {API_KEY}'
+        ],
+        example: '/mcp/QGUYbd7r... or /mcp with X-API-Key header'
       },
       documentation: 'https://github.com/bcharleson/heyreach-mcp-server'
     });
@@ -211,7 +243,8 @@ export async function startHttpServer(port: number = 3000): Promise<void> {
         reject(error);
       } else {
         console.error(`HeyReach MCP HTTP Server listening on port ${port}`);
-        console.error(`Usage: POST/GET/DELETE to /mcp/{API_KEY}`);
+        console.error(`Usage: POST/GET/DELETE to /mcp/{API_KEY} or /mcp with header authentication`);
+        console.error(`Header auth: X-API-Key: {API_KEY} or Authorization: Bearer {API_KEY}`);
         console.error(`Health check: GET /health`);
         resolve();
       }
