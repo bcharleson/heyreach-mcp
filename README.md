@@ -21,6 +21,22 @@ A **modern** Model Context Protocol (MCP) server with **dual transport support**
 - **Backward Compatibility**: Existing stdio usage unchanged
 - **Concurrent Sessions**: Support for multiple simultaneous connections
 
+## 🚀 One-Click Cloud Deployment
+
+Deploy your HeyReach MCP Server to the cloud instantly with automatic DNS rebinding protection configuration:
+
+### 🚂 Railway (Recommended for n8n)
+[![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/template/heyreach-mcp?referralCode=heyreach)
+
+**Perfect for n8n integration** - Automatic domain configuration and environment variables.
+
+### ▲ Vercel (Fastest Deployment)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fbcharleson%2Fheyreach-mcp&env=ALLOWED_HOSTS&envDescription=Your%20custom%20domain%20for%20DNS%20rebinding%20protection&envLink=https%3A%2F%2Fgithub.com%2Fbcharleson%2Fheyreach-mcp%2Fblob%2Fmain%2Fdeploy%2FDEPLOYMENT_GUIDE.md)
+
+**Global edge deployment** - Instant HTTPS and custom domain support.
+
+> 📋 **Post-deployment**: Follow the [Deployment Guide](deploy/DEPLOYMENT_GUIDE.md) to configure custom domains and test n8n integration.
+
 ## ✅ Available Tools (All Tested & Working)
 
 ### 🎯 Core Campaign Management
@@ -237,10 +253,11 @@ Add the following to your Claude Desktop configuration file:
 ```
 
 #### Option 3: MCP Client with Header Authentication (EASIEST!)
-**🆕 NEW IN v2.0.2** - Recommended for n8n users
+**🆕 NEW IN v2.0.3** - Recommended for n8n users
 
-1. Deploy HeyReach MCP Server to cloud (Vercel, Railway, etc.)
-2. Create **MCP Client (HTTP)** credentials in n8n:
+1. **Deploy with one-click**: Use the [Railway](#-railway-recommended-for-n8n) or [Vercel](#-vercel-fastest-deployment) buttons above
+2. **Configure custom domain**: Follow the [Deployment Guide](deploy/DEPLOYMENT_GUIDE.md)
+3. Create **MCP Client (HTTP)** credentials in n8n:
 
 **MCP Client Configuration:**
 - **Endpoint**: `https://your-deployment.vercel.app/mcp`

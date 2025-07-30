@@ -6,22 +6,32 @@
       "use": "@vercel/node"
     }
   ],
-  "rewrites": [
+  "routes": [
     {
-      "source": "/mcp/(.*)",
-      "destination": "/dist/http-index.js"
+      "src": "/mcp/(.*)",
+      "dest": "/dist/http-index.js"
     },
     {
-      "source": "/health",
-      "destination": "/dist/http-index.js"
+      "src": "/mcp",
+      "dest": "/dist/http-index.js"
     },
     {
-      "source": "/",
-      "destination": "/dist/http-index.js"
+      "src": "/health",
+      "dest": "/dist/http-index.js"
+    },
+    {
+      "src": "/",
+      "dest": "/dist/http-index.js"
     }
   ],
   "env": {
-    "NODE_ENV": "production"
+    "NODE_ENV": "production",
+    "ENABLE_DNS_REBINDING_PROTECTION": "true",
+    "ALLOWED_HOSTS": "@allowed_hosts",
+    "CORS_ORIGIN": "*",
+    "CORS_METHODS": "GET,POST,DELETE,OPTIONS",
+    "CORS_HEADERS": "Content-Type,mcp-session-id,x-api-key,authorization",
+    "CORS_EXPOSE_HEADERS": "Mcp-Session-Id"
   },
   "headers": [
     {
@@ -37,7 +47,28 @@
         },
         {
           "key": "Access-Control-Allow-Headers",
-          "value": "Content-Type, mcp-session-id"
+          "value": "Content-Type, mcp-session-id, x-api-key, authorization"
+        },
+        {
+          "key": "Access-Control-Expose-Headers",
+          "value": "Mcp-Session-Id"
+        }
+      ]
+    },
+    {
+      "source": "/mcp",
+      "headers": [
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
+        },
+        {
+          "key": "Access-Control-Allow-Methods",
+          "value": "GET, POST, DELETE, OPTIONS"
+        },
+        {
+          "key": "Access-Control-Allow-Headers",
+          "value": "Content-Type, mcp-session-id, x-api-key, authorization"
         },
         {
           "key": "Access-Control-Expose-Headers",
