@@ -112,6 +112,18 @@ async function handleMcpRequest(req: Request, res: Response) {
       sessionTransport = transports[sessionId];
     } else if (!sessionId && isInitializeRequest(req.body)) {
       // New initialization request
+      // Debug logging for environment variables
+      console.log('🔧 Environment Variables Debug:');
+      console.log('ALLOWED_HOSTS:', process.env.ALLOWED_HOSTS);
+      console.log('ENABLE_DNS_REBINDING_PROTECTION:', process.env.ENABLE_DNS_REBINDING_PROTECTION);
+
+      const allowedHosts = process.env.ALLOWED_HOSTS ?
+        process.env.ALLOWED_HOSTS.split(',').map(host => host.trim()) :
+        ['127.0.0.1', 'localhost', 'localhost:3000', 'localhost:3001', 'localhost:3002', 'localhost:3003', 'localhost:3004', 'localhost:3005'];
+
+      console.log('🔧 Parsed allowedHosts:', allowedHosts);
+      console.log('🔧 DNS Rebinding Protection:', process.env.ENABLE_DNS_REBINDING_PROTECTION !== 'false');
+
       const transport = new StreamableHTTPServerTransport({
         sessionIdGenerator: () => randomUUID(),
         onsessioninitialized: (sessionId) => {
@@ -120,9 +132,7 @@ async function handleMcpRequest(req: Request, res: Response) {
         },
         // Enable DNS rebinding protection for security
         enableDnsRebindingProtection: process.env.ENABLE_DNS_REBINDING_PROTECTION !== 'false',
-        allowedHosts: process.env.ALLOWED_HOSTS ?
-          process.env.ALLOWED_HOSTS.split(',').map(host => host.trim()) :
-          ['127.0.0.1', 'localhost', 'localhost:3000', 'localhost:3001', 'localhost:3002', 'localhost:3003', 'localhost:3004', 'localhost:3005'],
+        allowedHosts,
       });
 
       // Create HeyReach MCP server
