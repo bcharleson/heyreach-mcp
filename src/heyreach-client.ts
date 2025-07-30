@@ -96,7 +96,7 @@ export class HeyReachClient {
    */
   async getCampaignDetails(campaignId: string): Promise<ApiResponse<Campaign>> {
     try {
-      const response = await this.client.get(`/campaign/${campaignId}`);
+      const response = await this.client.get(`/campaign/GetById?campaignId=${campaignId}`);
       return {
         success: true,
         data: response.data,
@@ -114,19 +114,12 @@ export class HeyReachClient {
    * Create a new campaign
    */
   async createCampaign(params: CreateCampaignParams): Promise<ApiResponse<Campaign>> {
-    try {
-      const response = await this.client.post('/campaign/Create', params);
-      return {
-        success: true,
-        data: response.data,
-        message: 'Campaign created successfully'
-      };
-    } catch (error) {
-      return {
-        success: false,
-        error: error instanceof Error ? error.message : 'Unknown error'
-      };
-    }
+    // Note: The /campaign/Create endpoint does not exist in the HeyReach API
+    // This is a known limitation documented in API_ENDPOINT_STATUS.md
+    return {
+      success: false,
+      error: 'Campaign creation endpoint is not available in the HeyReach API. Campaigns must be created through the HeyReach web interface.',
+    };
   }
 
   /**
@@ -155,29 +148,13 @@ export class HeyReachClient {
    * Get leads in a campaign
    */
   async getCampaignLeads(campaignId: string, page: number = 1, limit: number = 50): Promise<PaginatedResponse<Lead>> {
-    try {
-      const response = await this.client.post('/campaign/GetLeads', {
-        campaignId,
-        page,
-        limit
-      });
-      return {
-        success: true,
-        data: response.data?.leads || [],
-        pagination: {
-          page,
-          limit,
-          total: response.data?.total || 0,
-          hasMore: response.data?.hasMore || false
-        },
-        message: 'Campaign leads retrieved successfully'
-      };
-    } catch (error) {
-      return {
-        success: false,
-        error: error instanceof Error ? error.message : 'Unknown error'
-      };
-    }
+    // Note: The /campaign/GetLeads endpoint does not exist in the HeyReach API
+    // This is a known limitation documented in API_ENDPOINT_STATUS.md
+    return {
+      success: false,
+      error: 'Campaign leads endpoint is not available in the HeyReach API. Lead information must be accessed through the HeyReach web interface or individual lead lookup.',
+      data: []
+    };
   }
 
   /**
@@ -206,76 +183,50 @@ export class HeyReachClient {
    * Send message to lead
    */
   async sendMessage(params: SendMessageParams): Promise<ApiResponse<{ messageId: string }>> {
-    try {
-      const response = await this.client.post('/message/Send', params);
-      return {
-        success: true,
-        data: { messageId: response.data?.messageId || 'unknown' },
-        message: 'Message sent successfully'
-      };
-    } catch (error) {
-      return {
-        success: false,
-        error: error instanceof Error ? error.message : 'Unknown error'
-      };
-    }
+    // Note: The /message/Send endpoint does not exist in the HeyReach API
+    // This is a known limitation documented in API_ENDPOINT_STATUS.md
+    return {
+      success: false,
+      error: 'Direct message sending endpoint is not available in the HeyReach API. Messages must be sent through the HeyReach web interface or campaign automation.',
+    };
   }
 
   /**
    * Get message templates
    */
   async getMessageTemplates(): Promise<PaginatedResponse<MessageTemplate>> {
-    try {
-      const response = await this.client.get('/templates/GetAll');
-      return {
-        success: true,
-        data: response.data?.templates || [],
-        message: 'Message templates retrieved successfully'
-      };
-    } catch (error) {
-      return {
-        success: false,
-        error: error instanceof Error ? error.message : 'Unknown error'
-      };
-    }
+    // Note: The /templates/GetAll endpoint does not exist in the HeyReach API
+    // This is a known limitation documented in API_ENDPOINT_STATUS.md
+    return {
+      success: false,
+      error: 'Message templates endpoint is not available in the HeyReach API. Templates must be managed through the HeyReach web interface.',
+      data: []
+    };
   }
 
   /**
    * Perform social action
    */
   async performSocialAction(params: SocialActionParams): Promise<ApiResponse<SocialAction>> {
-    try {
-      const response = await this.client.post('/social/Action', params);
-      return {
-        success: true,
-        data: response.data,
-        message: `${params.action} action queued successfully`
-      };
-    } catch (error) {
-      return {
-        success: false,
-        error: error instanceof Error ? error.message : 'Unknown error'
-      };
-    }
+    // Note: The /social/Action endpoint does not exist in the HeyReach API
+    // This is a known limitation documented in API_ENDPOINT_STATUS.md
+    return {
+      success: false,
+      error: 'Social action endpoint is not available in the HeyReach API. Social actions must be configured through campaign automation in the HeyReach web interface.',
+    };
   }
 
   /**
    * Get campaign metrics
    */
   async getCampaignMetrics(campaignId: string): Promise<ApiResponse<CampaignMetrics>> {
-    try {
-      const response = await this.client.get(`/analytics/campaign/${campaignId}`);
-      return {
-        success: true,
-        data: response.data,
-        message: 'Campaign metrics retrieved successfully'
-      };
-    } catch (error) {
-      return {
-        success: false,
-        error: error instanceof Error ? error.message : 'Unknown error'
-      };
-    }
+    // Note: The /analytics/campaign/{id} endpoint does not exist in the HeyReach API
+    // This is a known limitation documented in API_ENDPOINT_STATUS.md
+    // Use getOverallStats() for general analytics data instead
+    return {
+      success: false,
+      error: 'Campaign-specific metrics endpoint is not available in the HeyReach API. Use the overall stats endpoint for general analytics data.',
+    };
   }
 
   /**
@@ -283,7 +234,8 @@ export class HeyReachClient {
    */
   async toggleCampaignStatus(campaignId: string, action: 'pause' | 'resume'): Promise<ApiResponse<Campaign>> {
     try {
-      const response = await this.client.post(`/campaign/${action}`, { campaignId });
+      const endpoint = action === 'pause' ? '/campaign/Pause' : '/campaign/Resume';
+      const response = await this.client.post(`${endpoint}?campaignId=${campaignId}`);
       return {
         success: true,
         data: response.data,
