@@ -28,9 +28,17 @@ Deploy your HeyReach MCP Server to the cloud instantly with automatic DNS rebind
 ### 🚂 Railway (Recommended for n8n)
 [![Deploy on Railway](https://railway.com/button.svg)](https://railway.com/new)
 
-**Perfect for n8n integration** - Deploy from GitHub with automatic environment configuration.
+**Perfect for n8n integration** - Automatic environment configuration with `${{RAILWAY_PUBLIC_DOMAIN}}`.
 
-> **Instructions**: Click the button → Connect GitHub → Select `bcharleson/heyreach-mcp` repository → Deploy
+**📋 Quick Deploy Steps:**
+1. **Click "Deploy on Railway"** button above
+2. **Sign in** to Railway (connect GitHub if needed)
+3. **Select "Deploy from GitHub repo"** from the dropdown
+4. **Search for:** `bcharleson/heyreach-mcp`
+5. **Click Deploy** - Railway auto-detects `railway.toml` configuration
+6. **Done!** Your MCP server will be live with automatic DNS configuration
+
+> 🎯 **Result**: `https://your-app.up.railway.app` ready for n8n integration
 
 ### ▲ Vercel (Fastest Deployment)
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fbcharleson%2Fheyreach-mcp&env=ALLOWED_HOSTS&envDescription=Your%20custom%20domain%20for%20DNS%20rebinding%20protection&envLink=https%3A%2F%2Fgithub.com%2Fbcharleson%2Fheyreach-mcp%2Fblob%2Fmain%2Fdeploy%2FDEPLOYMENT_GUIDE.md)

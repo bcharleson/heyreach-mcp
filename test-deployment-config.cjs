@@ -117,22 +117,42 @@ function testVercelJson() {
 
 function testDeploymentUrls() {
   const urls = [
-    'https://railway.com/new',
-    'https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fbcharleson%2Fheyreach-mcp'
+    {
+      name: 'Railway (Current)',
+      url: 'https://railway.com/new',
+      description: 'General deployment page - requires manual repo selection'
+    },
+    {
+      name: 'Railway (Future Template)',
+      url: 'https://railway.com/new/template/TEMPLATE_ID',
+      description: 'Direct template deployment - true one-click (after template creation)'
+    },
+    {
+      name: 'Vercel',
+      url: 'https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fbcharleson%2Fheyreach-mcp',
+      description: 'Direct repository clone with pre-populated URL'
+    }
   ];
-  
-  urls.forEach((url, index) => {
-    const platform = index === 0 ? 'Railway' : 'Vercel';
-    console.log(`Testing ${platform} URL: ${url}`);
-    
+
+  urls.forEach(({ name, url, description }) => {
+    console.log(`Testing ${name}:`);
+    console.log(`  URL: ${url}`);
+    console.log(`  Description: ${description}`);
+
     // Simple URL validation
     try {
       new URL(url);
-      console.log(`✅ ${platform} URL is valid`);
+      console.log(`  Status: ✅ Valid URL format`);
     } catch (error) {
-      console.log(`❌ ${platform} URL is invalid:`, error.message);
+      console.log(`  Status: ❌ Invalid URL format - ${error.message}`);
     }
+    console.log('');
   });
+
+  console.log('📋 Deployment URL Analysis:');
+  console.log('  • Railway (Current): Requires 6 manual steps but works reliably');
+  console.log('  • Railway (Template): Would provide true one-click deployment');
+  console.log('  • Vercel: Already provides one-click deployment with pre-populated repo');
 }
 
 function testEnvironmentVariables() {

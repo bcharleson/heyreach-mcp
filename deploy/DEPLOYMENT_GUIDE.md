@@ -8,13 +8,39 @@ Deploy your HeyReach MCP Server to the cloud with a single click! This guide pro
 
 [![Deploy on Railway](https://railway.com/button.svg)](https://railway.com/new)
 
-**Deployment Steps:**
-1. Click the "Deploy on Railway" button above
-2. Sign in to Railway and connect your GitHub account
-3. Select "Deploy from GitHub repo"
-4. Search for and select `bcharleson/heyreach-mcp`
-5. Railway will automatically detect the `railway.toml` configuration
-6. Click "Deploy" - environment variables will be configured automatically
+**📋 Step-by-Step Deployment:**
+
+1. **🚀 Click Deploy Button**
+   - Click the "Deploy on Railway" button above
+   - You'll be taken to Railway's deployment page
+
+2. **🔐 Authentication**
+   - Sign in to Railway (create account if needed)
+   - Connect your GitHub account when prompted
+   - Grant necessary permissions
+
+3. **📂 Repository Selection**
+   - In the deployment modal, you'll see a dropdown
+   - Select **"Deploy from GitHub repo"**
+   - In the search field, type: `bcharleson/heyreach-mcp`
+   - Select the `bcharleson/heyreach-mcp` repository
+
+4. **⚙️ Automatic Configuration**
+   - Railway automatically detects the `railway.toml` file
+   - Environment variables are pre-configured:
+     - `ALLOWED_HOSTS` = `${{RAILWAY_PUBLIC_DOMAIN}},127.0.0.1,localhost`
+     - `ENABLE_DNS_REBINDING_PROTECTION` = `true`
+     - All CORS headers configured for n8n compatibility
+
+5. **🚀 Deploy**
+   - Click the **"Deploy"** button
+   - Railway will build and deploy your MCP server
+   - Wait for deployment to complete (usually 2-3 minutes)
+
+6. **✅ Success**
+   - Your MCP server will be available at: `https://your-app.up.railway.app`
+   - Health check: `https://your-app.up.railway.app/health`
+   - MCP endpoint: `https://your-app.up.railway.app/mcp`
 
 **Why Railway?**
 - ✅ Automatic domain configuration with `${{RAILWAY_PUBLIC_DOMAIN}}`
