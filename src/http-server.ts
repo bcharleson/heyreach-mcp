@@ -221,8 +221,8 @@ export async function startHttpServer(port: number = 3000): Promise<void> {
   app.get('/', (req, res) => {
     res.json({
       name: 'HeyReach MCP Server',
-      version: '2.0.2',
-      description: 'HTTP Streaming MCP Server for HeyReach LinkedIn automation',
+      version: '2.0.3',
+      description: 'HTTP Streaming MCP Server for HeyReach LinkedIn automation with header authentication',
       usage: {
         endpoint: '/mcp/{API_KEY} or /mcp with header authentication',
         methods: ['POST', 'GET', 'DELETE'],
