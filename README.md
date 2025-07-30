@@ -26,9 +26,11 @@ A **modern** Model Context Protocol (MCP) server with **dual transport support**
 Deploy your HeyReach MCP Server to the cloud instantly with automatic DNS rebinding protection configuration:
 
 ### 🚂 Railway (Recommended for n8n)
-[![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/template/heyreach-mcp?referralCode=heyreach)
+[![Deploy on Railway](https://railway.com/button.svg)](https://railway.com/new)
 
-**Perfect for n8n integration** - Automatic domain configuration and environment variables.
+**Perfect for n8n integration** - Deploy from GitHub with automatic environment configuration.
+
+> **Instructions**: Click the button → Connect GitHub → Select `bcharleson/heyreach-mcp` repository → Deploy
 
 ### ▲ Vercel (Fastest Deployment)
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fbcharleson%2Fheyreach-mcp&env=ALLOWED_HOSTS&envDescription=Your%20custom%20domain%20for%20DNS%20rebinding%20protection&envLink=https%3A%2F%2Fgithub.com%2Fbcharleson%2Fheyreach-mcp%2Fblob%2Fmain%2Fdeploy%2FDEPLOYMENT_GUIDE.md)

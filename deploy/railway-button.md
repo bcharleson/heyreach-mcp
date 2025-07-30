@@ -71,16 +71,16 @@ After deployment, use in n8n:
 - **Transport**: `HTTP Streamable`
 - **Authentication**: `Header Auth` with `X-API-Key`
 
-## Template URL
+## Deployment URL
 
-Use this URL for the Railway template:
+Use this URL for Railway deployment from GitHub:
 
 ```
-https://railway.app/template/heyreach-mcp?referralCode=heyreach
+https://railway.com/new?template=https://github.com/bcharleson/heyreach-mcp
 ```
 
 ## Button Code
 
 ```markdown
-[![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/template/heyreach-mcp?referralCode=heyreach)
+[![Deploy on Railway](https://railway.com/button.svg)](https://railway.com/new?template=https://github.com/bcharleson/heyreach-mcp)
 ```

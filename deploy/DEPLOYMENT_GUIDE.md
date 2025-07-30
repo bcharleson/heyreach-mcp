@@ -6,10 +6,18 @@ Deploy your HeyReach MCP Server to the cloud with a single click! This guide pro
 
 ### 🚂 Railway (Recommended for n8n)
 
-[![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/template/heyreach-mcp?referralCode=heyreach)
+[![Deploy on Railway](https://railway.com/button.svg)](https://railway.com/new)
+
+**Deployment Steps:**
+1. Click the "Deploy on Railway" button above
+2. Sign in to Railway and connect your GitHub account
+3. Select "Deploy from GitHub repo"
+4. Search for and select `bcharleson/heyreach-mcp`
+5. Railway will automatically detect the `railway.toml` configuration
+6. Click "Deploy" - environment variables will be configured automatically
 
 **Why Railway?**
-- ✅ Automatic domain configuration
+- ✅ Automatic domain configuration with `${{RAILWAY_PUBLIC_DOMAIN}}`
 - ✅ Built-in environment variable management
 - ✅ Perfect for n8n MCP Client integration
 - ✅ Auto-scaling and health checks included
