@@ -2,40 +2,89 @@
 
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import { HeyReachMcpServer } from './server.js';
+import { startHttpServer } from './http-server.js';
+import { readFileSync } from 'fs';
+import { fileURLToPath } from 'url';
+import { dirname, join } from 'path';
+
+// Get the directory of the current module
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 /**
- * Parse command line arguments to extract API key
+ * Handle version flag
  */
-function parseArguments(): { apiKey: string; baseUrl?: string } {
+function handleVersionFlag() {
+  const args = process.argv.slice(2);
+  
+  if (args.includes('--version') || args.includes('-v')) {
+    try {
+      // Read package.json from the project root (one level up from dist)
+      const packageJsonPath = join(__dirname, '..', 'package.json');
+      const packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf-8'));
+      console.log(packageJson.version);
+      process.exit(0);
+    } catch (error) {
+      console.error('Error reading version information');
+      process.exit(1);
+    }
+  }
+}
+
+/**
+ * Parse command line arguments
+ */
+function parseArguments(): {
+  apiKey?: string;
+  baseUrl?: string;
+  mode: 'stdio' | 'http';
+  port?: number;
+} {
   const args = process.argv.slice(2);
   let apiKey = '';
   let baseUrl = '';
+  let mode: 'stdio' | 'http' = 'stdio';
+  let port = 3000;
 
   for (let i = 0; i < args.length; i++) {
     const arg = args[i];
-    
+
     if (arg === '--api-key' && i + 1 < args.length) {
       apiKey = args[i + 1];
       i++; // Skip next argument as it's the value
     } else if (arg === '--base-url' && i + 1 < args.length) {
       baseUrl = args[i + 1];
       i++; // Skip next argument as it's the value
+    } else if (arg === '--port' && i + 1 < args.length) {
+      port = parseInt(args[i + 1], 10);
+      i++; // Skip next argument as it's the value
     } else if (arg.startsWith('--api-key=')) {
       apiKey = arg.split('=')[1];
     } else if (arg.startsWith('--base-url=')) {
       baseUrl = arg.split('=')[1];
+    } else if (arg.startsWith('--port=')) {
+      port = parseInt(arg.split('=')[1], 10);
+    } else if (arg === '--http' || arg === '--http-server') {
+      mode = 'http';
+    } else if (arg === '--stdio') {
+      mode = 'stdio';
     }
   }
 
-  if (!apiKey) {
-    console.error('Error: API key is required. Use --api-key=YOUR_API_KEY');
-    console.error('Usage: heyreach-mcp-server --api-key=YOUR_API_KEY [--base-url=CUSTOM_BASE_URL]');
+  // For stdio mode, API key is required
+  if (mode === 'stdio' && !apiKey) {
+    console.error('Error: API key is required for stdio mode. Use --api-key=YOUR_API_KEY');
+    console.error('Usage:');
+    console.error('  Stdio mode:  heyreach-mcp-server --api-key=YOUR_API_KEY [--base-url=CUSTOM_BASE_URL]');
+    console.error('  HTTP mode:   heyreach-mcp-server --http [--port=3000]');
     process.exit(1);
   }
 
-  return { 
-    apiKey, 
-    baseUrl: baseUrl || undefined 
+  return {
+    apiKey: apiKey || undefined,
+    baseUrl: baseUrl || undefined,
+    mode,
+    port
   };
 }
 
@@ -44,29 +93,44 @@ function parseArguments(): { apiKey: string; baseUrl?: string } {
  */
 async function main() {
   try {
+    // Handle version flag first, before any other processing
+    handleVersionFlag();
+
     // Parse command line arguments
-    const { apiKey, baseUrl } = parseArguments();
+    const { apiKey, baseUrl, mode, port } = parseArguments();
 
-    // Create and configure the HeyReach MCP server
-    const heyReachServer = new HeyReachMcpServer({
-      apiKey,
-      baseUrl
-    });
+    if (mode === 'http') {
+      // Start HTTP streaming server
+      console.error('Starting HeyReach MCP HTTP Server...');
+      await startHttpServer(port);
+    } else {
+      // Start stdio server (original mode)
+      if (!apiKey) {
+        console.error('Error: API key is required for stdio mode');
+        process.exit(1);
+      }
 
-    // Get the MCP server instance
-    const server = heyReachServer.getServer();
+      // Create and configure the HeyReach MCP server
+      const heyReachServer = new HeyReachMcpServer({
+        apiKey,
+        baseUrl
+      });
 
-    // Create stdio transport
-    const transport = new StdioServerTransport();
+      // Get the MCP server instance
+      const server = heyReachServer.getServer();
 
-    // Connect the server to the transport
-    await server.connect(transport);
+      // Create stdio transport
+      const transport = new StdioServerTransport();
 
-    // Log successful startup (to stderr so it doesn't interfere with MCP communication)
-    console.error('HeyReach MCP Server started successfully');
-    console.error(`API Key: ${apiKey.substring(0, 8)}...`);
-    if (baseUrl) {
-      console.error(`Base URL: ${baseUrl}`);
+      // Connect the server to the transport
+      await server.connect(transport);
+
+      // Log successful startup (to stderr so it doesn't interfere with MCP communication)
+      console.error('HeyReach MCP Server started successfully (stdio mode)');
+      console.error(`API Key: ${apiKey.substring(0, 8)}...`);
+      if (baseUrl) {
+        console.error(`Base URL: ${baseUrl}`);
+      }
     }
 
   } catch (error) {

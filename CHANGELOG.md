@@ -5,6 +5,144 @@ All notable changes to the HeyReach MCP Server will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.0] - 2025-07-30
+
+### 🚀 Major Features Added
+
+#### Dual Transport Architecture
+- **HTTP Streaming Transport**: Added support for HTTP streaming transport alongside existing stdio transport
+- **URL-based API Authentication**: Implemented `/mcp/{API_KEY}` endpoint pattern for remote access
+- **Session Management**: Proper session handling with automatic cleanup for HTTP transport
+- **Backward Compatibility**: Stdio transport remains unchanged for existing users
+
+#### Cloud Deployment Support
+- **Docker Support**: Multi-stage Docker builds with security best practices
+- **Vercel Configuration**: Ready-to-deploy Vercel configuration with proper routing
+- **Railway Configuration**: Complete Railway deployment setup with auto-scaling
+- **Health Monitoring**: Built-in health check endpoints for production monitoring
+
+#### Production Features
+- **CORS Support**: Configurable CORS headers for browser-based clients
+- **DNS Rebinding Protection**: Security protection against DNS rebinding attacks
+- **Graceful Shutdown**: Proper cleanup of resources on server shutdown
+- **Concurrent Sessions**: Support for multiple simultaneous HTTP sessions
+
+### 🔧 Technical Improvements
+
+#### MCP SDK Update
+- **Latest SDK**: Updated to MCP TypeScript SDK v1.17.0
+- **Protocol Compliance**: Full compatibility with latest MCP protocol specifications
+- **No Breaking Changes**: Existing stdio usage remains unchanged
+
+#### Architecture Enhancements
+- **Dual Entry Points**: Separate binaries for stdio (`heyreach-mcp-server`) and HTTP (`heyreach-mcp-http`)
+- **Environment Configuration**: Comprehensive environment variable support
+- **Error Handling**: Enhanced error handling for both transport modes
+- **Logging**: Improved logging for debugging and monitoring
+
+### 📦 New Files Added
+
+#### Core Implementation
+- `src/http-server.ts` - HTTP streaming transport implementation
+- `src/http-index.ts` - HTTP-only entry point for cloud deployment
+
+#### Deployment Configuration
+- `vercel.json` - Vercel deployment configuration
+- `railway.toml` - Railway deployment configuration
+- `Dockerfile` - Multi-stage Docker build configuration
+- `docker-compose.yml` - Docker Compose setup with nginx
+- `nginx.conf` - Production nginx configuration
+
+#### Scripts and Automation
+- `scripts/deploy-vercel.sh` - Automated Vercel deployment
+- `scripts/deploy-railway.sh` - Automated Railway deployment
+- `scripts/deploy-docker.sh` - Automated Docker deployment
+
+#### Documentation
+- `DEPLOYMENT.md` - Comprehensive deployment guide
+- `HEYREACH_DEPLOYMENT_GUIDE.md` - Specific guide for HeyReach team
+- `.env.example` - Environment variable examples
+
+### 🔄 Changed
+
+#### Package Configuration
+- **Version**: Bumped to 2.0.0
+- **Description**: Updated to reflect dual transport support
+- **Scripts**: Added `dev:http`, `start:http` for HTTP mode
+- **Binary**: Added `heyreach-mcp-http` binary
+
+#### Dependencies
+- **MCP SDK**: Updated from ^1.12.0 to ^1.17.0
+- **Express**: Added ^4.21.2 for HTTP server
+- **CORS**: Added ^2.8.5 for cross-origin support
+- **Type Definitions**: Added @types/express and @types/cors
+
+### 🌐 n8n Integration
+
+#### Enhanced Compatibility
+- **Stdio Support**: Existing n8n MCP node compatibility maintained
+- **HTTP Support**: New HTTP Request node integration for cloud deployments
+- **Workflow Examples**: Updated documentation with HTTP transport examples
+
+### 🔒 Security Enhancements
+
+#### Production Security
+- **DNS Rebinding Protection**: Enabled by default with configurable allowed hosts
+- **CORS Configuration**: Proper CORS headers for secure browser access
+- **SSL/TLS Ready**: HTTPS-ready configuration for production deployment
+- **Security Headers**: Added security headers in nginx configuration
+
+### 📊 Monitoring and Observability
+
+#### Health Checks
+- **Health Endpoint**: `/health` endpoint for monitoring
+- **Session Tracking**: Session count in health responses
+- **Error Logging**: Comprehensive error logging for debugging
+
+### 🚀 Deployment Options
+
+#### Cloud Platforms
+- **Vercel**: One-click deployment with proper routing
+- **Railway**: Auto-scaling deployment with health checks
+- **Docker**: Production-ready containerization
+
+#### Integration Patterns
+- **Reverse Proxy**: nginx configuration for production deployment
+- **Load Balancing**: Support for multiple instances
+- **Environment Variables**: Comprehensive configuration options
+
+### 📈 Performance Improvements
+
+#### Efficiency
+- **Concurrent Sessions**: Multiple simultaneous connections supported
+- **Resource Cleanup**: Proper cleanup of sessions and resources
+- **Optimized Builds**: Multi-stage Docker builds for smaller images
+
+### 🔧 Developer Experience
+
+#### Development Tools
+- **Hot Reload**: Development mode with automatic restart
+- **Type Safety**: Full TypeScript support with latest types
+- **Error Messages**: Improved error messages and debugging
+
+### 📋 Migration Guide
+
+#### From v1.x to v2.0.0
+- **No Breaking Changes**: Existing stdio usage works unchanged
+- **New Features**: HTTP transport available as additional option
+- **Configuration**: New environment variables for HTTP mode
+- **Deployment**: New cloud deployment options available
+
+### 🎯 Use Cases Enabled
+
+#### New Capabilities
+- **Remote Access**: Access HeyReach tools from cloud environments
+- **n8n Cloud**: Integration with cloud-based n8n instances
+- **Web Applications**: Direct integration with web applications
+- **API Gateway**: Use as microservice in larger architectures
+
+---
+
 ## [1.0.3] - 2024-01-XX
 
 ### Fixed

@@ -1,0 +1,40 @@
+[build]
+builder = "nixpacks"
+
+[deploy]
+startCommand = "npm run start:http"
+healthcheckPath = "/health"
+healthcheckTimeout = 300
+restartPolicyType = "on_failure"
+restartPolicyMaxRetries = 10
+
+[environments.production]
+variables = { NODE_ENV = "production" }
+
+[environments.staging]
+variables = { NODE_ENV = "staging" }
+
+# Networking configuration
+[[services]]
+name = "heyreach-mcp-server"
+port = 3000
+
+# Health check configuration
+[services.healthcheck]
+path = "/health"
+interval = 30
+timeout = 10
+retries = 3
+
+# Resource limits
+[services.resources]
+memory = "512Mi"
+cpu = "0.5"
+
+# Auto-scaling configuration
+[services.autoscaling]
+enabled = true
+minReplicas = 1
+maxReplicas = 3
+targetCPU = 70
+targetMemory = 80

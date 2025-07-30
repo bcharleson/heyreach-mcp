@@ -2,6 +2,15 @@ import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { z } from 'zod';
 import { HeyReachClient } from './heyreach-client.js';
 import { HeyReachConfig } from './types.js';
+import { readFileSync } from 'fs';
+import { fileURLToPath } from 'url';
+import { dirname, join } from 'path';
+
+// Get the directory of the current module and read version from package.json
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+const packageJsonPath = join(__dirname, '..', 'package.json');
+const packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf-8'));
 
 export class HeyReachMcpServer {
   private server: McpServer;
@@ -10,7 +19,7 @@ export class HeyReachMcpServer {
   constructor(config: HeyReachConfig) {
     this.server = new McpServer({
       name: 'heyreach-mcp-server',
-      version: '1.0.0',
+      version: packageJson.version,
     });
 
     this.heyReachClient = new HeyReachClient(config);

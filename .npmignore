@@ -1,36 +1,71 @@
-# Source files (only include dist)
+# Source files (only include compiled dist)
 src/
+*.ts
+!*.d.ts
 tsconfig.json
 
-# Test files
+# Development and testing files
 test-*.js
-package/
+debug-*.js
+*.test.js
+*.spec.js
 
-# Development files
-*.log
-.DS_Store
-.env
-.env.local
+# Development documentation (keep essential docs)
+IMPROVEMENT_SUMMARY.md
+FINAL_RESULTS.md
+PROJECT_SUMMARY.md
+TASK_COMPLETION_SUMMARY.md
+PRODUCTION_ENHANCEMENTS.md
+CLAUDE.md
+EXAMPLES.md
 
-# IDE files
+# Configuration files
+claude-config-real.json
+claude-desktop-config.json
+
+# Development dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# IDE and editor files
 .vscode/
 .idea/
+*.swp
+*.swo
+*~
 
-# Git files
-.git/
-.gitignore
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
 
-# Node modules
-node_modules/
+# Logs
+logs/
+*.log
 
-# Build artifacts (keep dist)
-# dist/ - we want to include this
+# Runtime data
+pids/
+*.pid
+*.seed
+*.pid.lock
 
-# Documentation (keep main docs)
-# README.md - keep
-# LICENSE - keep
-# CHANGELOG.md - keep
+# Coverage directory used by tools like istanbul
+coverage/
+.nyc_output/
 
-# Config files for development
-claude-config-real.json
-debug-api.js
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Temporary folders
+tmp/
+temp/

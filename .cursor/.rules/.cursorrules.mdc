@@ -1,0 +1,353 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# HeyReach MCP Server - Cursor Rules
+
+## Project Overview
+This is a production-ready Model Context Protocol (MCP) server for HeyReach LinkedIn automation platform. It enables Claude Desktop and other MCP clients to manage campaigns, add leads, and automate LinkedIn outreach with comprehensive validation and error handling.
+
+## MCP Protocol Compliance
+
+### Current Protocol Version
+- **Protocol Version**: 2025-03-26 (current)
+- **Revision**: Current (ready for use)
+- **SDK**: @modelcontextprotocol/sdk (TypeScript)
+
+### Supported MCP Features
+- ✅ **Tools**: Full implementation with 12 production-ready tools
+- ✅ **Resources**: Not implemented (not needed for this use case)
+- ✅ **Prompts**: Not implemented (not needed for this use case)
+- ❌ **Sampling**: Not implemented
+- ❌ **Logging**: Should be implemented for production debugging
+- ❌ **Pagination**: Should be implemented for large result sets
+
+### MCP Client Compatibility
+Primary targets (verified working):
+- ✅ **Claude Desktop App**: Full support (tools, prompts, resources)
+- ✅ **Cursor**: Tools support
+- ✅ **Windsurf Editor**: Tools support with AI Flow
+- ✅ **Continue**: Tools, prompts, and resources support
+
+## Code Style & Architecture
+
+### TypeScript Standards
+- Use strict TypeScript with proper type definitions
+- Prefer explicit types over `any`
+- Use Zod for runtime validation and schema definition
+- Follow functional programming patterns where appropriate
+- Use async/await for all asynchronous operations
+
+### MCP Server Architecture
+```typescript
+// Proper MCP server structure
+export class HeyReachMcpServer {
+  private server: McpServer;
+  private heyReachClient: HeyReachClient;
+  
+  constructor(config: HeyReachConfig) {
+    this.server = new McpServer({
+      name: 'heyreach-mcp-server',
+      version: '1.1.7'
+    });
+    this.heyReachClient = new HeyReachClient(config);
+    this.setupTools();
+  }
+}
+```
+
+### Tool Definition Best Practices
+```typescript
+// Correct tool definition pattern
+this.server.tool(
+  'tool-name',
+  {
+    // Zod schema - NO description field here
+    param1: z.string().describe('Parameter description'),
+    param2: z.number().optional().default(0).describe('Optional parameter')
+  },
+  async ({ param1, param2 }) => {
+    try {
+      // Implementation
+      return createSuccessResponse(data, message);
+    } catch (error) {
+      return createErrorResponse(error.message);
+    }
+  }
+);
+```
+
+## Error Handling Standards
+
+### MCP Error Codes
+- `-32602`: Invalid params (validation errors)
+- `-32603`: Internal error (server errors)
+- `-32601`: Method not found
+- `-32600`: Invalid request
+
+### Error Response Pattern
+```typescript
+// Use consistent error response format
+return createErrorResponse(error instanceof Error ? error.message : 'Unknown error');
+
+// For validation errors, include helpful guidance
+throw new McpError(
+  ErrorCode.InvalidParams,
+  `${toolName}: Parameter '${param}' is required. Use get-campaigns to get valid IDs.`
+);
+```
+
+### API Error Categorization
+```typescript
+// Categorize HeyReach API errors properly
+if (status === 401 || status === 403) {
+  throw new McpError(ErrorCode.InvalidParams, 'Invalid API key');
+}
+if (status === 404) {
+  throw new McpError(ErrorCode.InvalidParams, 'Resource not found');
+}
+if (message.includes('timeout')) {
+  throw new McpError(ErrorCode.InternalError, 'Network timeout - retry in a few moments');
+}
+```
+
+## HeyReach API Integration
+
+### Authentication
+- Use `X-API-KEY` header (not Authorization Bearer)
+- Base URL: `https://api.heyreach.io/api/public`
+- Timeout: 60 seconds for slow API responses
+
+### API Client Pattern
+```typescript
+// Proper API client structure
+export class HeyReachClient {
+  private client: AxiosInstance;
+  
+  constructor(config: HeyReachConfig) {
+    this.client = axios.create({
+      baseURL: config.baseUrl || 'https://api.heyreach.io/api/public',
+      timeout: 60000, // 60 second timeout
+      headers: {
+        'X-API-KEY': config.apiKey,
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      }
+    });
+  }
+}
+```
+
+### Campaign Validation Requirements
+```typescript
+// Critical validation for add-leads-to-campaign
+// 1. Campaign must exist
+// 2. Campaign status must be ACTIVE or IN_PROGRESS
+// 3. Campaign must have LinkedIn sender accounts assigned
+// 4. Each lead must have a valid profileUrl
+
+if (!['ACTIVE', 'IN_PROGRESS'].includes(campaign.status)) {
+  throw new Error('Campaign must be ACTIVE to add leads');
+}
+if (!campaign.campaignAccountIds?.length) {
+  throw new Error('Campaign has no LinkedIn sender accounts assigned');
+}
+```
+
+## Testing Standards
+
+### Test File Naming
+- `test-*.js` for general tests
+- `test-*-optimization.js` for performance tests
+- `test-*-workflow.js` for end-to-end tests
+- `debug-*.js` for debugging utilities
+
+### Test Structure
+```typescript
+// Comprehensive test pattern
+async function testToolFunctionality() {
+  console.log('🧪 Testing [tool-name]');
+  
+  // Test 1: Valid input
+  const result = await callMcpTool('tool-name', validArgs);
+  if (result.success) {
+    console.log('✅ Valid input test passed');
+  }
+  
+  // Test 2: Invalid input
+  const errorResult = await callMcpTool('tool-name', invalidArgs);
+  if (!errorResult.success) {
+    console.log('✅ Error handling test passed');
+  }
+}
+```
+
+## Security & Validation
+
+### Input Validation
+- Always validate required parameters
+- Use Zod schemas for type safety
+- Validate LinkedIn profile URL format
+- Sanitize all user inputs
+
+### API Key Security
+- Never log full API keys (use masking: `key.substring(0, 10) + '...'`)
+- Validate API key format before making requests
+- Handle authentication errors gracefully
+
+### Rate Limiting
+- Implement request throttling for HeyReach API
+- Add retry logic for network timeouts
+- Respect API rate limits
+
+## Documentation Standards
+
+### Code Comments
+```typescript
+/**
+ * Add leads to an ACTIVE HeyReach campaign with personalization
+ * 
+ * @param campaignId - Must be ACTIVE status with LinkedIn senders
+ * @param leads - Array of leads with required profileUrl
+ * @returns Success response with added count
+ */
+```
+
+### Tool Descriptions
+- Include prerequisites in parameter descriptions
+- Provide examples of valid input formats
+- Explain validation requirements clearly
+- Include personalization guidance
+
+### README Updates
+- Keep feature list current
+- Update installation instructions
+- Include troubleshooting section
+- Provide Claude Desktop configuration examples
+
+## Performance Optimization
+
+### API Efficiency
+- Cache campaign details when possible
+- Batch API requests where supported
+- Use appropriate timeouts (60s for HeyReach)
+- Implement connection pooling
+
+### Memory Management
+- Clean up resources after tool execution
+- Avoid memory leaks in long-running processes
+- Use streaming for large data sets
+
+## Deployment & Distribution
+
+### NPM Package
+- Version format: semantic versioning (1.1.7)
+- Include all necessary files in package.json
+- Exclude test files and development utilities
+- Provide clear installation instructions
+
+### Binary Distribution
+- Ensure cross-platform compatibility
+- Include proper shebang for CLI usage
+- Handle command-line arguments properly
+
+## Debugging & Monitoring
+
+### Logging Implementation
+```typescript
+// Implement MCP logging capability
+{
+  "capabilities": {
+    "logging": {}
+  }
+}
+
+// Send log notifications
+{
+  "jsonrpc": "2.0",
+  "method": "notifications/message", 
+  "params": {
+    "level": "info",
+    "logger": "heyreach-client",
+    "data": { "operation": "add-leads", "count": 5 }
+  }
+}
+```
+
+### Debug Utilities
+- Create comprehensive test suites
+- Include API response timing
+- Log error details for troubleshooting
+- Provide clear success/failure indicators
+
+## Git & Version Control
+
+### Commit Messages
+- Use conventional commits format
+- Include emoji for visual clarity
+- Reference issue numbers when applicable
+- Keep messages concise but descriptive
+
+### Branch Strategy
+- `main`: Production-ready code
+- `feature/*`: New feature development
+- `fix/*`: Bug fixes
+- `docs/*`: Documentation updates
+
+### File Organization
+```
+src/
+├── server.ts          # Main MCP server
+├── heyreach-client.ts # API client
+├── error-handler.ts   # Error handling utilities
+├── types.ts          # Type definitions
+└── index.ts          # CLI entry point
+
+test/
+├── test-*.js         # Test files
+└── debug-*.js        # Debug utilities
+```
+
+## Dependencies Management
+
+### Core Dependencies
+- `@modelcontextprotocol/sdk`: MCP protocol implementation
+- `zod`: Schema validation
+- `axios`: HTTP client
+- `typescript`: Type checking
+
+### Development Dependencies
+- Keep minimal for production builds
+- Use exact versions for reproducible builds
+- Regular security updates
+
+## MCP Client Compatibility Matrix
+
+Based on official MCP documentation, our server supports:
+
+| Client | Tools | Resources | Prompts | Notes |
+|--------|-------|-----------|---------|-------|
+| **Claude Desktop** | ✅ | ✅ | ✅ | Primary target - full support |
+| **Claude.ai** | ✅ | ✅ | ✅ | Remote MCP servers supported |
+| **Cursor** | ✅ | ❌ | ❌ | Tools only |
+| **Windsurf Editor** | ✅ | ❌ | ❌ | Tools with AI Flow |
+| **Continue** | ✅ | ✅ | ✅ | Full support |
+| **VS Code GitHub Copilot** | ✅ | ✅ | ✅ | Full support with discovery |
+| **Cline** | ✅ | ✅ | ❌ | Tools and resources |
+
+## Future MCP Features to Implement
+
+### High Priority
+1. **Logging Capability**: For production debugging
+2. **Pagination**: For large campaign/lead lists
+3. **Resource Support**: For campaign templates/documentation
+
+### Medium Priority
+1. **Prompt Templates**: For common LinkedIn outreach scenarios
+2. **Discovery**: Dynamic tool updates
+3. **Sampling**: For AI-generated content
+
+---
+
+**Remember**: This is a production MCP server used by real users for LinkedIn automation. Prioritize reliability, clear error messages, and comprehensive validation over new features.
