@@ -97,7 +97,7 @@ async function handleMcpRequest(req: Request, res: Response) {
         },
         // Enable DNS rebinding protection for security
         enableDnsRebindingProtection: true,
-        allowedHosts: ['127.0.0.1', 'localhost', 'localhost:3000', 'localhost:3001', 'localhost:3002'],
+        allowedHosts: ['127.0.0.1', 'localhost', 'localhost:3000', 'localhost:3001', 'localhost:3002', 'localhost:3003', 'localhost:3004', 'localhost:3005'],
       });
 
       // Create HeyReach MCP server
@@ -194,7 +194,7 @@ export async function startHttpServer(port: number = 3000): Promise<void> {
   app.get('/', (req, res) => {
     res.json({
       name: 'HeyReach MCP Server',
-      version: '2.0.0',
+      version: '2.0.2',
       description: 'HTTP Streaming MCP Server for HeyReach LinkedIn automation',
       usage: {
         endpoint: '/mcp/{API_KEY}',
