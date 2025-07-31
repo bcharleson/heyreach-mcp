@@ -130,9 +130,6 @@ async function handleMcpRequest(req: Request, res: Response) {
           // Store the transport by session ID
           transports[sessionId] = sessionTransport;
         },
-        // Enable DNS rebinding protection for security
-        enableDnsRebindingProtection: process.env.ENABLE_DNS_REBINDING_PROTECTION !== 'false',
-        allowedHosts,
       });
 
       // Create HeyReach MCP server

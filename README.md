@@ -7,7 +7,7 @@ A **modern** Model Context Protocol (MCP) server with **dual transport support**
 ### 🌐 Dual Transport Architecture
 - **Stdio Transport**: For local MCP clients (Claude Desktop, Cursor, Windsurf)
 - **HTTP Streaming Transport**: For remote access and cloud deployment (n8n, web clients)
-- **URL-based API Authentication**: `https://your-domain.com/mcp/{API_KEY}`
+- **Header-based Authentication**: Secure API key authentication via `X-API-KEY` header
 
 ### ☁️ Cloud Deployment Ready
 - **Docker Support**: Multi-stage builds with security best practices
@@ -21,7 +21,23 @@ A **modern** Model Context Protocol (MCP) server with **dual transport support**
 - **Backward Compatibility**: Existing stdio usage unchanged
 - **Concurrent Sessions**: Support for multiple simultaneous connections
 
-## 🚀 One-Click Cloud Deployment
+## 🚀 One-Click Install & Deployment
+
+### 🎯 One-Click Install for Cursor IDE
+
+Add HeyReach MCP Server to your Cursor IDE instantly with deeplink installation:
+
+#### Production HTTP Transport (Recommended)
+[![Add heyreach-http to Cursor](https://img.shields.io/badge/Add_to_Cursor-HTTP-blue?style=for-the-badge&logo=cursor)](cursor://anysphere.cursor-deeplink/mcp/install?name=heyreach-http&config=eyJ0cmFuc3BvcnQiOnsidHlwZSI6Imh0dHAiLCJ1cmwiOiJZT1VSX01DUF9TRVJWRVJfVVJML21jcCIsImhlYWRlcnMiOnsiWC1BUEktS0VZIjoiWU9VUl9IRVlSRUFDSF9BUElfS0VZIn19fQ==)
+
+After clicking:
+1. Replace `YOUR_MCP_SERVER_URL` with your deployment URL
+2. Replace `YOUR_HEYREACH_API_KEY` with your API key
+
+#### Local Development  
+[![Add heyreach-local to Cursor](https://img.shields.io/badge/Add_to_Cursor-Local-blue?style=for-the-badge&logo=cursor)](cursor://anysphere.cursor-deeplink/mcp/install?name=heyreach-local&config=eyJ0cmFuc3BvcnQiOnsidHlwZSI6Imh0dHAiLCJ1cmwiOiJodHRwOi8vbG9jYWxob3N0OjMwMDAvbWNwIiwiaGVhZGVycyI6eyJYLUFQSS1LRVkiOiJZT1VSX0hFWVJFQUNIX0FQSV9LRVkifX19)
+
+### ☁️ Cloud Deployment
 
 Deploy your HeyReach MCP Server to the cloud instantly with automatic DNS rebinding protection configuration:
 
@@ -248,11 +264,12 @@ Add the following to your Claude Desktop configuration file:
 
 ```json
 {
-  "url": "https://your-deployment.vercel.app/mcp/{{$env.HEYREACH_API_KEY}}",
+  "url": "YOUR_MCP_SERVER_URL/mcp",
   "method": "POST",
   "headers": {
     "Content-Type": "application/json",
-    "Accept": "application/json, text/event-stream"
+    "Accept": "application/json, text/event-stream",
+    "X-API-KEY": "{{$env.HEYREACH_API_KEY}}"
   },
   "body": {
     "jsonrpc": "2.0",
@@ -270,19 +287,24 @@ Add the following to your Claude Desktop configuration file:
 3. Create **MCP Client (HTTP)** credentials in n8n:
 
 **MCP Client Configuration:**
-- **Endpoint**: `https://your-deployment.vercel.app/mcp`
+- **Endpoint**: `YOUR_MCP_SERVER_URL/mcp`
 - **Server Transport**: `HTTP Streamable`
 - **Authentication**: `Header Auth`
 - **Credential**: Create a new credential with:
   - **Name**: `HeyReach MCP`
   - **X-API-Key**: `YOUR_HEYREACH_API_KEY`
 
+**Where YOUR_MCP_SERVER_URL comes from:**
+- **Railway**: `https://your-project-name.up.railway.app`
+- **Vercel**: `https://your-project-name.vercel.app`  
+- **Custom Domain**: `https://your-domain.com`
+
 **Example n8n MCP Client Setup:**
 ```
-Endpoint: https://heyreach-mcp-production.up.railway.app/mcp
+Endpoint: https://your-project-name.up.railway.app/mcp
 Server Transport: HTTP Streamable
 Authentication: Header Auth
-Credential: HeyReach MCP (X-API-Key: YOUR_API_KEY)
+Credential: HeyReach MCP (X-API-Key: YOUR_HEYREACH_API_KEY)
 ```
 
 This method is much easier than URL path authentication and more secure!

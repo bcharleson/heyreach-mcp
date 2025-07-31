@@ -1,0 +1,73 @@
+[
+  {
+    "version": "1.12.0",
+    "status": "build_failed",
+    "error": ""
+  },
+  {
+    "version": "1.12.1",
+    "status": "build_failed",
+    "error": ""
+  },
+  {
+    "version": "1.12.2",
+    "status": "build_failed",
+    "error": ""
+  },
+  {
+    "version": "1.12.3",
+    "status": "build_failed",
+    "error": ""
+  },
+  {
+    "version": "1.13.0",
+    "status": "build_failed",
+    "error": ""
+  },
+  {
+    "version": "1.13.1",
+    "status": "build_failed",
+    "error": ""
+  },
+  {
+    "version": "1.13.2",
+    "status": "install_failed",
+    "error": "npm warn tar TAR_ENTRY_ERROR ENOENT: no such file or directory, open '/Users/brandoncharleson/Documents/DeveloperProjects/HeyReach MCP/node_modules/@modelcontextprotocol/sdk/dist/cjs/shared/uriTemplate.d.ts'\nnpm warn tar TAR_ENTRY_ERROR ENOENT: no such file or directory, open '/Users/brandoncharleson/Documents/DeveloperProjects/HeyReach MCP/node_modules/@modelcontextprotocol/sdk/dist/esm/shared/uriTemplate.d.ts'\nnpm warn tar TAR_ENTRY_ERROR ENOENT: no such file or directory, open '/Users/brandoncharleson/Documents/DeveloperProjects/HeyReach MCP/node_modules/@modelcontextprotocol/sdk/dist/cjs/client/websocket.d.ts'\nnpm warn tar TAR_ENTRY_ERROR ENOENT: no such file or directory, open '/Users/brandoncharleson/Documents/DeveloperProjects/HeyReach MCP/node_modules/@modelcontextprotocol/sdk/dist/esm/client/websocket.d.ts'\nnpm error code EEXIST\nnpm error syscall mkdir\nnpm error path /Users/brandoncharleson/.npm/_cacache/content-v2/sha512/57/1e\nnpm error errno -13\nnpm error EACCES: permission denied, mkdir '/Users/brandoncharleson/.npm/_cacache/content-v2/sha512/57/1e'\nnpm error File exists: /Users/brandoncharleson/.npm/_cacache/content-v2/sha512/57/1e\nnpm error Remove the existing file and try again, or run npm\nnpm error with --force to overwrite files recklessly.\nnpm error A complete log of this run can be found in: /Users/brandoncharleson/.npm/_logs/2025-07-30T21_20_18_988Z-debug-0.log\n"
+  },
+  {
+    "version": "1.13.3",
+    "status": "auth_failed",
+    "testOutput": "🔍 Testing Local STDIO Transport (dist/index.js)\n\nStarting local STDIO MCP server...\nSTDERR: HeyReach MCP Server started successfully (stdio mode)\nSTDERR: API Key: QGUYbd7r...\n\nSending MCP initialization...\nSTDOUT: {\"result\":{\"protocolVersion\":\"2024-11-05\",\"capabilities\":{\"tools\":{\"listChanged\":true}},\"serverInfo\":{\"name\":\"heyreach-mcp-server\",\"version\":\"2.0.5\"}},\"jsonrpc\":\"2.0\",\"id\":1}\n\nSending check-api-key tool call...\nSTDOUT: {\"result\":{\"content\":[{\"type\":\"text\",\"text\":\"Error: HeyReach API E",
+    "testError": ""
+  },
+  {
+    "version": "1.14.0",
+    "status": "auth_failed",
+    "testOutput": "🔍 Testing Local STDIO Transport (dist/index.js)\n\nStarting local STDIO MCP server...\nSTDERR: HeyReach MCP Server started successfully (stdio mode)\nSTDERR: API Key: QGUYbd7r...\n\nSending MCP initialization...\nSTDOUT: {\"result\":{\"protocolVersion\":\"2024-11-05\",\"capabilities\":{\"tools\":{\"listChanged\":true}},\"serverInfo\":{\"name\":\"heyreach-mcp-server\",\"version\":\"2.0.5\"}},\"jsonrpc\":\"2.0\",\"id\":1}\n\nSending check-api-key tool call...\nSTDOUT: {\"result\":{\"content\":[{\"type\":\"text\",\"text\":\"Error: HeyReach API E",
+    "testError": ""
+  },
+  {
+    "version": "1.15.0",
+    "status": "auth_failed",
+    "testOutput": "🔍 Testing Local STDIO Transport (dist/index.js)\n\nStarting local STDIO MCP server...\nSTDERR: HeyReach MCP Server started successfully (stdio mode)\nSTDERR: API Key: QGUYbd7r...\n\nSending MCP initialization...\nSTDOUT: {\"result\":{\"protocolVersion\":\"2024-11-05\",\"capabilities\":{\"tools\":{\"listChanged\":true}},\"serverInfo\":{\"name\":\"heyreach-mcp-server\",\"version\":\"2.0.5\"}},\"jsonrpc\":\"2.0\",\"id\":1}\n\nSending check-api-key tool call...\nSTDOUT: {\"result\":{\"content\":[{\"type\":\"text\",\"text\":\"Error: HeyReach API E",
+    "testError": ""
+  },
+  {
+    "version": "1.15.1",
+    "status": "auth_failed",
+    "testOutput": "🔍 Testing Local STDIO Transport (dist/index.js)\n\nStarting local STDIO MCP server...\nSTDERR: HeyReach MCP Server started successfully (stdio mode)\nSTDERR: API Key: QGUYbd7r...\n\nSending MCP initialization...\nSTDOUT: {\"result\":{\"protocolVersion\":\"2024-11-05\",\"capabilities\":{\"tools\":{\"listChanged\":true}},\"serverInfo\":{\"name\":\"heyreach-mcp-server\",\"version\":\"2.0.5\"}},\"jsonrpc\":\"2.0\",\"id\":1}\n\nSending check-api-key tool call...\nSTDOUT: {\"result\":{\"content\":[{\"type\":\"text\",\"text\":\"Error: HeyReach API E",
+    "testError": ""
+  },
+  {
+    "version": "1.16.0",
+    "status": "auth_failed",
+    "testOutput": "🔍 Testing Local STDIO Transport (dist/index.js)\n\nStarting local STDIO MCP server...\nSTDERR: HeyReach MCP Server started successfully (stdio mode)\nSTDERR: API Key: QGUYbd7r...\n\nSending MCP initialization...\nSTDOUT: {\"result\":{\"protocolVersion\":\"2024-11-05\",\"capabilities\":{\"tools\":{\"listChanged\":true}},\"serverInfo\":{\"name\":\"heyreach-mcp-server\",\"version\":\"2.0.5\"}},\"jsonrpc\":\"2.0\",\"id\":1}\n\nSending check-api-key tool call...\nSTDOUT: {\"result\":{\"content\":[{\"type\":\"text\",\"text\":\"Error: HeyReach API E",
+    "testError": ""
+  },
+  {
+    "version": "1.17.0",
+    "status": "auth_failed",
+    "testOutput": "🔍 Testing Local STDIO Transport (dist/index.js)\n\nStarting local STDIO MCP server...\nSTDERR: HeyReach MCP Server started successfully (stdio mode)\nSTDERR: API Key: QGUYbd7r...\n\nSending MCP initialization...\nSTDOUT: {\"result\":{\"protocolVersion\":\"2024-11-05\",\"capabilities\":{\"tools\":{\"listChanged\":true}},\"serverInfo\":{\"name\":\"heyreach-mcp-server\",\"version\":\"2.0.5\"}},\"jsonrpc\":\"2.0\",\"id\":1}\n\nSending check-api-key tool call...\nSTDOUT: {\"result\":{\"content\":[{\"type\":\"text\",\"text\":\"Error: HeyReach API E",
+    "testError": ""
+  }
+]

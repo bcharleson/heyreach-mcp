@@ -1,37 +1,56 @@
 {
   "mcpServers": {
     "heyreach": {
-      "command": "npx",
-      "args": [
-        "heyreach-mcp-server@1.2.1",
-        "--api-key=QGUYbd7rkBqswN0otgk8KvzCVRZ+h7Tiz0onFETzF6M="
-      ]
+      "transport": {
+        "type": "http",
+        "url": "YOUR_MCP_SERVER_URL/mcp",
+        "headers": {
+          "X-API-KEY": "YOUR_HEYREACH_API_KEY_HERE"
+        }
+      }
     }
   }
 }
 
-// Alternative configuration if installed globally:
+// Alternative configurations:
+
+// 1. Local HTTP server with header auth:
 // {
 //   "mcpServers": {
 //     "heyreach": {
-//       "command": "heyreach-mcp-server",
-//       "args": [
-//         "--api-key=YOUR_HEYREACH_API_KEY_HERE"
-//       ]
+//       "transport": {
+//         "type": "http",
+//         "url": "http://localhost:3000/mcp",
+//         "headers": {
+//           "X-API-KEY": "YOUR_HEYREACH_API_KEY_HERE"
+//         }
+//       }
 //     }
 //   }
 // }
 
-// Configuration with custom base URL:
+// 2. With Authorization header (Bearer token):
 // {
 //   "mcpServers": {
 //     "heyreach": {
-//       "command": "npx",
-//       "args": [
-//         "heyreach-mcp-server",
-//         "--api-key=YOUR_HEYREACH_API_KEY_HERE",
-//         "--base-url=https://api.heyreach.io/api/public"
-//       ]
+//       "transport": {
+//         "type": "http",
+//         "url": "YOUR_MCP_SERVER_URL/mcp",
+//         "headers": {
+//           "Authorization": "Bearer YOUR_HEYREACH_API_KEY_HERE"
+//         }
+//       }
+//     }
+//   }
+// }
+
+// 3. Legacy STDIO transport (not recommended due to MCP SDK issues):
+// {
+//   "mcpServers": {
+//     "heyreach": {
+//       "command": "node",
+//       "args": ["dist/stdio-index.js", "--api-key=YOUR_API_KEY"],
+//       "cwd": "/path/to/project"
 //     }
 //   }
 // }

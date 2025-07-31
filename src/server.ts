@@ -48,7 +48,49 @@ export class HeyReachMcpServer {
     this.server.tool(
       'get-all-campaigns',
       {
-        description: 'Retrieve all campaigns from your HeyReach account.'
+        description: `Retrieve all campaigns from your HeyReach account.
+
+**Prerequisites:**
+- Valid HeyReach API key must be configured
+- No other API calls required before using this tool
+
+**API Endpoint:** POST /campaign/GetAll
+**Request Payload:**
+\`\`\`json
+{}
+\`\`\`
+
+**Response Structure:**
+\`\`\`json
+{
+  "success": true,
+  "data": [
+    {
+      "id": "camp_123456",
+      "name": "Q1 LinkedIn Outreach",
+      "status": "active",
+      "createdAt": "2024-01-15T10:00:00Z",
+      "updatedAt": "2024-01-20T14:30:00Z",
+      "description": "Quarterly outreach campaign",
+      "leadCount": 150
+    }
+  ],
+  "pagination": {
+    "page": 1,
+    "limit": 50,
+    "total": 1,
+    "hasMore": false
+  }
+}
+\`\`\`
+
+**Common Error Scenarios:**
+- 401 Unauthorized: Invalid or expired API key
+- 403 Forbidden: API key lacks campaign read permissions
+- 500 Internal Server Error: HeyReach service temporarily unavailable
+
+**Usage Example:**
+This tool requires no parameters and returns all campaigns associated with your API key.`
       },
       async () => {
         const result = await this.heyReachClient.getAllCampaigns();
@@ -76,8 +118,54 @@ export class HeyReachMcpServer {
     this.server.tool(
       'get-campaign-details',
       {
-        description: 'Get detailed information about a specific campaign.',
-        campaignId: z.string().describe('Campaign ID to retrieve details for. Use get-all-campaigns to find valid IDs.')
+        campaignId: z.string().describe(`The unique identifier of the campaign to retrieve detailed information for.
+
+**Prerequisites:**
+- Valid HeyReach API key must be configured
+- Campaign must exist in your HeyReach account
+- Recommended: Use 'get-all-campaigns' first to obtain valid campaign IDs
+
+**API Endpoint:** GET /campaign/{campaignId}
+**Request Payload:** None (campaign ID passed in URL path)
+
+**Parameter Details:**
+- campaignId (string, required): The unique campaign identifier (e.g., "camp_123456")
+  - Format: Alphanumeric string, typically prefixed with "camp_"
+  - Example: "camp_123456", "campaign_abc789"
+
+**Response Structure:**
+\`\`\`json
+{
+  "success": true,
+  "data": {
+    "id": "camp_123456",
+    "name": "Q1 LinkedIn Outreach",
+    "status": "active",
+    "createdAt": "2024-01-15T10:00:00Z",
+    "updatedAt": "2024-01-20T14:30:00Z",
+    "description": "Quarterly outreach campaign targeting tech executives",
+    "leadCount": 150,
+    "settings": {
+      "dailyLimit": 50,
+      "delayBetweenActions": 30,
+      "workingHours": {
+        "start": "09:00",
+        "end": "17:00"
+      }
+    }
+  }
+}
+\`\`\`
+
+**Common Error Scenarios:**
+- 401 Unauthorized: Invalid or expired API key
+- 404 Not Found: Campaign ID does not exist or was deleted
+- 403 Forbidden: API key lacks access to this specific campaign
+- 400 Bad Request: Invalid campaign ID format
+
+**Usage Example:**
+Input: { "campaignId": "camp_123456" }
+Use this after getting campaign IDs from 'get-all-campaigns' to retrieve full campaign details including settings and metrics.`)
       },
       async ({ campaignId }) => {
         const result = await this.heyReachClient.getCampaignDetails(campaignId);

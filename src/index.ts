@@ -2,6 +2,7 @@
 
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import { HeyReachMcpServer } from './server.js';
+import { HeyReachStdioServer } from './stdio-server.js';
 import { startHttpServer } from './http-server.js';
 import { readFileSync } from 'fs';
 import { fileURLToPath } from 'url';
@@ -104,29 +105,24 @@ async function main() {
       console.error('Starting HeyReach MCP HTTP Server...');
       await startHttpServer(port);
     } else {
-      // Start stdio server (original mode)
+      // Start stdio server (STDIO-optimized version)
       if (!apiKey) {
         console.error('Error: API key is required for stdio mode');
         process.exit(1);
       }
 
-      // Create and configure the HeyReach MCP server
-      const heyReachServer = new HeyReachMcpServer({
+      // Create and configure the HeyReach STDIO server (uses simple HTTP client)
+      const heyReachStdioServer = new HeyReachStdioServer({
         apiKey,
-        baseUrl
+        baseURL: baseUrl,
+        timeout: 30000
       });
 
-      // Get the MCP server instance
-      const server = heyReachServer.getServer();
-
-      // Create stdio transport
-      const transport = new StdioServerTransport();
-
-      // Connect the server to the transport
-      await server.connect(transport);
+      // Start the STDIO server
+      await heyReachStdioServer.start();
 
       // Log successful startup (to stderr so it doesn't interfere with MCP communication)
-      console.error('HeyReach MCP Server started successfully (stdio mode)');
+      console.error('HeyReach MCP Server started successfully (stdio mode - optimized)');
       console.error(`API Key: ${apiKey.substring(0, 8)}...`);
       if (baseUrl) {
         console.error(`Base URL: ${baseUrl}`);

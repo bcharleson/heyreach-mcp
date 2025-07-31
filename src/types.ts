@@ -8,13 +8,27 @@ export interface HeyReachConfig {
 }
 
 export interface Campaign {
-  id: string;
+  id: number;
   name: string;
-  status: 'active' | 'paused' | 'completed' | 'draft';
-  createdAt: string;
-  updatedAt: string;
-  description?: string;
-  leadCount?: number;
+  status: string;
+  creationTime: string;
+  linkedInUserListName?: string;
+  linkedInUserListId?: number;
+  campaignAccountIds?: number[];
+  progressStats?: {
+    totalUsers: number;
+    totalUsersInProgress: number;
+    totalUsersPending: number;
+    totalUsersFinished: number;
+    totalUsersFailed: number;
+    totalUsersManuallyStopped: number;
+    totalUsersExcluded: number;
+  };
+  excludeInOtherCampaigns?: boolean;
+  excludeHasOtherAccConversations?: boolean;
+  excludeContactedFromSenderInOtherCampaign?: boolean;
+  excludeListId?: number | null;
+  organizationUnitId?: number;
 }
 
 export interface Lead {
