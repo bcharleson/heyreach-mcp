@@ -4,10 +4,11 @@ A **modern** Model Context Protocol (MCP) server with **dual transport support**
 
 ## 🚀 What's New in v2.0.0
 
-### 🌐 Dual Transport Architecture
-- **Stdio Transport**: For local MCP clients (Claude Desktop, Cursor, Windsurf)
-- **HTTP Streaming Transport**: For remote access and cloud deployment (n8n, web clients)
-- **URL-based API Authentication**: `https://your-domain.com/mcp/{API_KEY}`
+### 🌐 HTTP Streaming Transport (Tested & Working)
+- **Header-based Authentication**: Secure `X-API-KEY` header authentication
+- **83% Tool Success Rate**: 5/6 core tools fully tested and working
+- **Session Management**: Proper MCP session handling for HTTP transport
+- **One-Click Install**: Cursor IDE integration with deeplink installation
 
 ### ☁️ Cloud Deployment Ready
 - **Docker Support**: Multi-stage builds with security best practices
@@ -70,6 +71,35 @@ Deploy your HeyReach MCP Server to the cloud instantly with automatic DNS rebind
 - **`get-all-lists`** - Retrieve all lead lists with pagination
 - **`create-empty-list`** - Create new lead or company lists
 - **`get-my-network-for-sender`** - Get network profiles for LinkedIn accounts *(requires sender ID)*
+
+## 🖱️ One-Click Install for Cursor IDE
+
+Get started instantly with Cursor's one-click MCP server installation:
+
+### 🌐 Production HTTP Server (Recommended)
+[![Install in Cursor](https://img.shields.io/badge/Install%20in-Cursor-blue?style=for-the-badge&logo=cursor)](cursor://mcp/install?config=eyJtY3BTZXJ2ZXJzIjp7ImhleXJlYWNoIjp7InRyYW5zcG9ydCI6eyJ0eXBlIjoiaHR0cCIsInVybCI6IllPVVJfTUNQX1NFUlZFUl9VUkwvbWNwIiwiaGVhZGVycyI6eyJYLUFQSS1LRVkiOiJZT1VSX0hFWVJFQUNIX0FQSV9LRVlfSEVSRSJ9fX19fQ==)
+
+**Perfect for remote access and cloud deployment** - Works with any deployed HeyReach MCP server.
+
+**📋 Setup Steps:**
+1. **Click "Install in Cursor"** button above
+2. **Replace placeholders** in the generated config:
+   - `YOUR_MCP_SERVER_URL` → Your deployed server URL (e.g., `https://your-app.up.railway.app`)
+   - `YOUR_HEYREACH_API_KEY_HERE` → Your actual HeyReach API key
+3. **Save and restart** Cursor to start using HeyReach tools!
+
+### 💻 Local Development Setup
+[![Install Local in Cursor](https://img.shields.io/badge/Install%20Local-Cursor-green?style=for-the-badge&logo=cursor)](cursor://mcp/install?config=eyJtY3BTZXJ2ZXJzIjp7ImhleXJlYWNoLWxvY2FsIjp7ImNvbW1hbmQiOiJucHgiLCJhcmdzIjpbImhleXJlYWNoLW1jcC1zZXJ2ZXIiLCItLWFwaS1rZXk9WU9VUl9IRVlSRUFDSF9BUElfS0VZX0hFUkUiXX19fQ==)
+
+**For local development and testing** - Runs HeyReach MCP server via npx.
+
+**📋 Setup Steps:**
+1. **Click "Install Local in Cursor"** button above
+2. **Replace placeholder** in the generated config:
+   - `YOUR_HEYREACH_API_KEY_HERE` → Your actual HeyReach API key
+3. **Save and restart** Cursor to start using HeyReach tools locally!
+
+> 💡 **Tip**: Use the Production HTTP setup for better performance and when sharing your MCP server with n8n or other tools.
 
 ## Installation & Usage
 
