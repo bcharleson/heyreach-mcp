@@ -77,7 +77,9 @@ export class HeyReachMcpServer {
       'get-campaign-details',
       {
         description: 'Get detailed information about a specific campaign.',
-        campaignId: z.string().describe('Campaign ID to retrieve details for. Use get-all-campaigns to find valid IDs.')
+        inputSchema: z.object({
+          campaignId: z.string().describe('Campaign ID to retrieve details for. Use get-all-campaigns to find valid IDs.')
+        })
       },
       async ({ campaignId }) => {
         const result = await this.heyReachClient.getCampaignDetails(campaignId);
