@@ -1,4 +1,5 @@
-# HeyReach MCP Server v2.0.0
+# HeyReach MCP Server
+<!-- Railway deployment trigger --> v2.0.0
 
 A **modern** Model Context Protocol (MCP) server with **dual transport support** for HeyReach LinkedIn automation. Supports both local (stdio) and remote (HTTP streaming) connections for maximum flexibility.
 
