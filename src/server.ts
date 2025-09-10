@@ -107,7 +107,9 @@ export class HeyReachMcpServer {
     this.server.tool(
       'create-campaign',
       {
-        name: z.string().describe(`The name of the new campaign to create.
+        description: 'Create a new campaign in your HeyReach account.',
+        inputSchema: z.object({
+          name: z.string().describe(`The name of the new campaign to create.
 
 **Prerequisites:**
 - Valid HeyReach API key must be configured
@@ -136,21 +138,22 @@ export class HeyReachMcpServer {
 - name (string, required): Campaign name (1-100 characters)
   - Example: "Q1 LinkedIn Outreach", "Tech Executive Campaign"
   - Must be unique within your account`),
-        description: z.string().optional().describe(`Optional description of the campaign's purpose and target audience.
+          description: z.string().optional().describe(`Optional description of the campaign's purpose and target audience.
 
 - description (string, optional): Detailed campaign description (max 500 characters)
   - Example: "Targeting CTOs and VPs of Engineering at Series B+ startups"
   - Used for internal organization and reporting`),
-        dailyLimit: z.number().optional().describe(`Maximum number of actions (messages, connection requests) to perform per day.
+          dailyLimit: z.number().optional().describe(`Maximum number of actions (messages, connection requests) to perform per day.
 
 - dailyLimit (number, optional): Daily action limit (1-200, default: 50)
   - Example: 25 for conservative approach, 100 for aggressive outreach
   - Helps maintain LinkedIn compliance and avoid account restrictions`),
-        delayBetweenActions: z.number().optional().describe(`Time delay between individual actions in minutes to appear more human-like.
+          delayBetweenActions: z.number().optional().describe(`Time delay between individual actions in minutes to appear more human-like.
 
 - delayBetweenActions (number, optional): Delay in minutes (5-120, default: 30)
   - Example: 15 for faster campaigns, 60 for more natural pacing
   - Reduces risk of LinkedIn detection and account limitations`)
+        })
       },
       async ({ name, description, dailyLimit, delayBetweenActions }) => {
         const params = {
@@ -187,7 +190,9 @@ export class HeyReachMcpServer {
     this.server.tool(
       'toggle-campaign-status',
       {
-        campaignId: z.string().describe(`The unique identifier of the campaign to pause or resume.
+        description: 'Pause or resume a campaign in your HeyReach account.',
+        inputSchema: z.object({
+          campaignId: z.string().describe(`The unique identifier of the campaign to pause or resume.
 
 **Prerequisites:**
 - Valid HeyReach API key must be configured
@@ -207,7 +212,7 @@ export class HeyReachMcpServer {
   - Format: Alphanumeric string, typically prefixed with "camp_"
   - Example: "camp_123456", "campaign_abc789"
   - Must be an existing campaign in your account`),
-        action: z.enum(['pause', 'resume']).describe(`The action to perform on the campaign.
+          action: z.enum(['pause', 'resume']).describe(`The action to perform on the campaign.
 
 **Parameter Details:**
 - action (enum, required): Must be either "pause" or "resume"
@@ -239,6 +244,7 @@ export class HeyReachMcpServer {
 **Usage Example:**
 Input: { "campaignId": "camp_123456", "action": "pause" }
 Use this to control campaign execution without deleting the campaign or its data.`)
+        })
       },
       async ({ campaignId, action }) => {
         const result = await this.heyReachClient.toggleCampaignStatus(campaignId, action);
@@ -268,7 +274,9 @@ Use this to control campaign execution without deleting the campaign or its data
     this.server.tool(
       'add-leads-to-campaign',
       {
-        campaignId: z.string().describe(`The unique identifier of the campaign to add leads to.
+        description: 'Add leads to an existing campaign in your HeyReach account.',
+        inputSchema: z.object({
+          campaignId: z.string().describe(`The unique identifier of the campaign to add leads to.
 
 **Prerequisites:**
 - Valid HeyReach API key must be configured
@@ -298,40 +306,40 @@ Use this to control campaign execution without deleting the campaign or its data
   - Format: Alphanumeric string, typically prefixed with "camp_"
   - Example: "camp_123456", "campaign_abc789"
   - Must be an existing, active campaign`),
-        leads: z.array(z.object({
-          firstName: z.string().optional().describe(`First name of the lead contact.
+          leads: z.array(z.object({
+            firstName: z.string().optional().describe(`First name of the lead contact.
 
 - firstName (string, optional): Lead's first name (1-50 characters)
   - Example: "John", "Sarah", "Michael"
   - Used for message personalization and contact identification`),
-          lastName: z.string().optional().describe(`Last name of the lead contact.
+            lastName: z.string().optional().describe(`Last name of the lead contact.
 
 - lastName (string, optional): Lead's last name (1-50 characters)
   - Example: "Smith", "Johnson", "Williams"
   - Combined with firstName for full name display and personalization`),
-          email: z.string().optional().describe(`Email address of the lead for contact and tracking.
+            email: z.string().optional().describe(`Email address of the lead for contact and tracking.
 
 - email (string, optional): Valid email address format
   - Example: "john.smith@techcorp.com", "sarah.j@startup.io"
   - Used for email outreach and lead identification
   - Must be valid email format if provided`),
-          linkedinUrl: z.string().optional().describe(`LinkedIn profile URL for social outreach and verification.
+            linkedinUrl: z.string().optional().describe(`LinkedIn profile URL for social outreach and verification.
 
 - linkedinUrl (string, optional): Full LinkedIn profile URL
   - Example: "https://linkedin.com/in/johnsmith", "https://www.linkedin.com/in/sarah-johnson-123456"
   - Used for LinkedIn connection requests and profile verification
   - Must be valid LinkedIn URL format if provided`),
-          company: z.string().optional().describe(`Company name where the lead currently works.
+            company: z.string().optional().describe(`Company name where the lead currently works.
 
 - company (string, optional): Current employer name (1-100 characters)
   - Example: "TechCorp Inc", "Startup Solutions LLC", "Global Enterprises"
   - Used for targeting and message personalization`),
-          position: z.string().optional().describe(`Job title or position of the lead at their company.
+            position: z.string().optional().describe(`Job title or position of the lead at their company.
 
 - position (string, optional): Current job title (1-100 characters)
   - Example: "VP of Engineering", "Senior Software Developer", "Chief Technology Officer"
   - Used for targeting and message personalization`)
-        })).describe(`Array of lead objects to add to the campaign.
+          })).describe(`Array of lead objects to add to the campaign.
 
 **Lead Array Details:**
 - Minimum 1 lead, maximum 1000 leads per request
@@ -370,6 +378,7 @@ Input: {
     }
   ]
 }`)
+        })
       },
       async ({ campaignId, leads }) => {
         const result = await this.heyReachClient.addLeadsToCampaign({ campaignId, leads });
@@ -397,7 +406,9 @@ Input: {
     this.server.tool(
       'get-campaign-leads',
       {
-        campaignId: z.string().describe(`The unique identifier of the campaign to retrieve leads from.
+        description: 'Retrieve leads from a specific campaign with pagination support.',
+        inputSchema: z.object({
+          campaignId: z.string().describe(`The unique identifier of the campaign to retrieve leads from.
 
 **Prerequisites:**
 - Valid HeyReach API key must be configured
@@ -419,14 +430,14 @@ Input: {
   - Format: Alphanumeric string, typically prefixed with "camp_"
   - Example: "camp_123456", "campaign_abc789"
   - Must be an existing campaign with leads`),
-        page: z.number().optional().default(1).describe(`Page number for pagination to navigate through large lead lists.
+          page: z.number().optional().default(1).describe(`Page number for pagination to navigate through large lead lists.
 
 **Parameter Details:**
 - page (number, optional, default: 1): Page number for pagination (minimum: 1)
   - Example: 1 for first page, 2 for second page, etc.
   - Used to navigate through large lead lists
   - Each page contains up to 'limit' number of leads`),
-        limit: z.number().optional().default(50).describe(`Number of leads to return per page.
+          limit: z.number().optional().default(50).describe(`Number of leads to return per page.
 
 **Parameter Details:**
 - limit (number, optional, default: 50): Number of leads per page (1-100)
@@ -478,6 +489,7 @@ Input: {
 **Usage Example:**
 Input: { "campaignId": "camp_123456", "page": 1, "limit": 25 }
 Use this to review leads in a campaign, monitor their status, and track outreach progress.`)
+        })
       },
       async ({ campaignId, page, limit }) => {
         const result = await this.heyReachClient.getCampaignLeads(campaignId, page, limit);
@@ -508,7 +520,9 @@ Use this to review leads in a campaign, monitor their status, and track outreach
     this.server.tool(
       'update-lead-status',
       {
-        leadId: z.string().describe(`The unique identifier of the lead to update status for.
+        description: 'Update the status of a specific lead in a campaign.',
+        inputSchema: z.object({
+          leadId: z.string().describe(`The unique identifier of the lead to update status for.
 
 **Prerequisites:**
 - Valid HeyReach API key must be configured
@@ -529,8 +543,8 @@ Use this to review leads in a campaign, monitor their status, and track outreach
   - Format: Alphanumeric string, typically prefixed with "lead_"
   - Example: "lead_123456", "lead_abc789"
   - Must be an existing lead in your campaigns`),
-        status: z.enum(['pending', 'contacted', 'replied', 'connected', 'not_interested', 'bounced'])
-          .describe(`The new status to assign to the lead.
+          status: z.enum(['pending', 'contacted', 'replied', 'connected', 'not_interested', 'bounced'])
+            .describe(`The new status to assign to the lead.
 
 **Status Options and Usage:**
 - "pending": Lead added but no actions taken yet
@@ -581,6 +595,7 @@ Use this to review leads in a campaign, monitor their status, and track outreach
 **Usage Example:**
 Input: { "leadId": "lead_123456", "status": "contacted" }
 Use this to manually update lead status or correct automated status tracking.`)
+        })
       },
       async ({ leadId, status }) => {
         const result = await this.heyReachClient.updateLeadStatus(leadId, status);
@@ -610,7 +625,9 @@ Use this to manually update lead status or correct automated status tracking.`)
     this.server.tool(
       'send-message',
       {
-        leadId: z.string().describe(`The unique identifier of the lead to send a message to.
+        description: 'Send a message to a specific lead.',
+        inputSchema: z.object({
+          leadId: z.string().describe(`The unique identifier of the lead to send a message to.
 
 **Prerequisites:**
 - Valid HeyReach API key must be configured
@@ -633,7 +650,7 @@ Use this to manually update lead status or correct automated status tracking.`)
   - Format: Alphanumeric string, typically prefixed with "lead_"
   - Example: "lead_123456", "lead_abc789"
   - Must be an existing lead with valid contact information`),
-        message: z.string().describe(`The message content to send to the lead.
+          message: z.string().describe(`The message content to send to the lead.
 
 **Parameter Details:**
 - message (string, required): The message text to send (1-2000 characters)
@@ -648,7 +665,7 @@ Use this to manually update lead status or correct automated status tracking.`)
 - Include a clear call-to-action
 - Avoid excessive links or promotional language
 - Respect LinkedIn's messaging guidelines`),
-        templateId: z.string().optional().describe(`Optional template ID to use for message formatting and variable replacement.
+          templateId: z.string().optional().describe(`Optional template ID to use for message formatting and variable replacement.
 
 **Parameter Details:**
 - templateId (string, optional): The unique template identifier
@@ -686,6 +703,7 @@ Input: {
   "message": "Hi John, I saw your recent post about AI in healthcare. Would love to connect!",
   "templateId": "template_connection_request"
 }`)
+        })
       },
       async ({ leadId, message, templateId }) => {
         const result = await this.heyReachClient.sendMessage({ leadId, message, templateId });
@@ -796,7 +814,9 @@ Use the returned template IDs with the 'send-message' tool for consistent messag
     this.server.tool(
       'perform-social-action',
       {
-        action: z.enum(['like', 'follow', 'view']).describe(`The type of social action to perform on LinkedIn.
+        description: 'Perform social actions on LinkedIn like likes, follows, and profile views.',
+        inputSchema: z.object({
+          action: z.enum(['like', 'follow', 'view']).describe(`The type of social action to perform on LinkedIn.
 
 **Prerequisites:**
 - Valid HeyReach API key must be configured
@@ -829,7 +849,7 @@ Use the returned template IDs with the 'send-message' tool for consistent messag
   - Use when: Researching lead or showing interest without direct engagement
   - Target: LinkedIn profile URLs
   - Effect: Appears in "Who viewed your profile" notifications`),
-        targetUrl: z.string().describe(`The LinkedIn URL to perform the action on.
+          targetUrl: z.string().describe(`The LinkedIn URL to perform the action on.
 
 **Parameter Details:**
 - targetUrl (string, required): Valid LinkedIn URL (posts, profiles, company pages)
@@ -843,7 +863,7 @@ Use the returned template IDs with the 'send-message' tool for consistent messag
 - Must start with "https://linkedin.com/" or "https://www.linkedin.com/"
 - Must be a valid, active LinkedIn page
 - Private profiles or restricted content may cause action failures`),
-        leadId: z.string().optional().describe(`Optional lead ID to associate this social action with for tracking and campaign management.
+          leadId: z.string().optional().describe(`Optional lead ID to associate this social action with for tracking and campaign management.
 
 **Parameter Details:**
 - leadId (string, optional): The unique lead identifier
@@ -890,6 +910,7 @@ Input: {
   "targetUrl": "https://linkedin.com/posts/johnsmith_ai-technology-innovation-activity-1234567890",
   "leadId": "lead_123456"
 }`)
+        })
       },
       async ({ action, targetUrl, leadId }) => {
         const result = await this.heyReachClient.performSocialAction({ action, targetUrl, leadId });
@@ -919,7 +940,9 @@ Input: {
     this.server.tool(
       'get-campaign-metrics',
       {
-        campaignId: z.string().describe(`The unique identifier of the campaign to retrieve performance metrics for.
+        description: 'Retrieve performance metrics and analytics for a specific campaign.',
+        inputSchema: z.object({
+          campaignId: z.string().describe(`The unique identifier of the campaign to retrieve performance metrics for.
 
 **Prerequisites:**
 - Valid HeyReach API key must be configured
@@ -992,6 +1015,7 @@ Input: {
 **Usage Example:**
 Input: { "campaignId": "camp_123456" }
 Use this to monitor campaign performance, identify optimization opportunities, and report on outreach effectiveness.`)
+        })
       },
       async ({ campaignId }) => {
         const result = await this.heyReachClient.getCampaignMetrics(campaignId);
